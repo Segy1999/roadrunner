@@ -2,7 +2,7 @@
 ---
 import repairsData from '../../data/repairs.json';
 
-const repairsJson = JSON.stringify(repairsData);
+const repairsJson = JSON.stringify(repairsData).replace(/</g, '\\u003C');
 ---
 
 <section id="pricing-wizard-001" data-aos="fade-in">
@@ -322,7 +322,7 @@ const repairsJson = JSON.stringify(repairsData);
 
     /* Dark mode overrides for wizard - now handled by CSS variables */
 </style>
-  <script id="repairs-data" type="application/json" set:text={repairsJson}></script>
+  <script id="repairs-data" type="application/json" set:html={repairsJson}></script>
   <script>
   // @ts-nocheck
   /**
