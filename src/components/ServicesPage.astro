@@ -1,4 +1,10 @@
 
+---
+import repairsData from '../../data/repairs.json';
+
+const repairsJson = JSON.stringify(repairsData);
+---
+
 <section id="pricing-wizard-001" data-aos="fade-in">
     <div class="pw-step" id="pw-step-1">
       <h2 class="pw-title">1. Choose your product</h2>
@@ -316,7 +322,9 @@
 
     /* Dark mode overrides for wizard - now handled by CSS variables */
 </style>
+  <script id="repairs-data" type="application/json" set:text={repairsJson}></script>
   <script>
+  // @ts-nocheck
   /**
    * Client-side logic for PricingWizard
    * - Loads deviceCatalog.json from Supabase Storage (via API endpoint or direct Storage URL)
@@ -339,6 +347,20 @@
     const toPhase3Btn = document.getElementById('to-phase-3');
   
     const state = { category:null, brand:null, model:null, variant:null, repairSelection:null };
+
+    const repairsData = (() => {
+      try {
+        const el = document.getElementById('repairs-data');
+        if (!el) {
+          console.warn('Embedded repairs data not found.');
+          return null;
+        }
+        return JSON.parse(el.textContent || '{}');
+      } catch (error) {
+        console.error('Failed to parse embedded repairs data', error);
+        return null;
+      }
+    })();
   
     // Local brand fallback (used if deviceCatalog.json fails to load)
     // Note: MobileAPI.dev provides phone/tablet/smartwatch data, but not laptops
@@ -525,17 +547,12 @@
     document.getElementById('back-to-2').addEventListener('click', ()=>{ pwStep3.style.display='none'; pwStep2.style.display='block'; });
   
     // --- Phase2: local repairs.json loader ---
-    let repairsData = null;
     async function loadRepairs(){
-      if(repairsData) return renderRepairs();
-      try{
-        const res = await fetch('/data/repairs.json');
-        if(!res.ok) throw new Error('repairs.json not found');
-        repairsData = await res.json();
-        renderRepairs();
-      }catch(e){
+      if(!repairsData || !Array.isArray(repairsData.repairs)){
         repairsContainer.innerText = 'Failed to load repairs.';
+        return;
       }
+      renderRepairs();
     }
   
     function renderRepairs(){
