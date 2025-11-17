@@ -1,0 +1,465 @@
+---
+const currentPath = Astro.url.pathname;
+const isActive = (path: string) => currentPath === path;
+---
+
+<header id="cs-navigation">
+  <div class="cs-container">
+      <!--Nav Logo (Text)-->
+      <a href="/" class="cs-logo" aria-label="back to home">
+          <span class="cs-logo-text">R³</span>
+      </a>
+      <!--Navigation List-->
+      <nav class="cs-nav" role="navigation">
+          <ul id="cs-expanded" class="cs-ul">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class={ `cs-li-link ${isActive('/faq') ? 'cs-active' : ''}`}>
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </nav>
+      <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+      <div class="cs-ul-wrapper">
+          <ul class="cs-ul-mobile">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class="cs-li-link">
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </div>
+      <a href="" class="cs-button-solid cs-nav-button">Contact Us</a>
+      <!--Mobile/Medium Desktop Nav Toggle-->
+      <button class="cs-toggle" aria-label="mobile menu toggle" aria-expanded="false">
+          <div class="cs-box" aria-hidden="true">
+              <span class="cs-line cs-line1" aria-hidden="true"></span>
+              <span class="cs-line cs-line2" aria-hidden="true"></span>
+              <span class="cs-line cs-line3" aria-hidden="true"></span>
+          </div>
+      </button>
+      <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+       <button id="dark-mode-toggle" aria-label="dark mode toggle">
+          <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
+          <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
+      </button> 
+  </div>
+</header>
+                                                              
+<style>
+  /*-- -------------------------- -->
+  <---     Mobile Navigation      -->
+  <--- -------------------------- -*/
+  
+  /* START OF DARK MODE TOGGLE STYLES */
+  #dark-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: transparent;
+    border: 2px solid #fff;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  #dark-mode-toggle .cs-moon {
+    display: block;
+    width: 1.25rem;
+    height: auto;
+    fill: #fff;
+  }
+
+  #dark-mode-toggle .cs-sun {
+    display: none;
+    width: 1.25rem;
+    height: auto;
+  }
+  
+  body.dark-mode #dark-mode-toggle {
+      border-color: #000;
+  }
+  
+  body.dark-mode #dark-mode-toggle .cs-moon {
+    display: none;
+  }
+
+  body.dark-mode #dark-mode-toggle .cs-sun {
+    display: block;
+  }
+  /* END OF DARK MODE TOGGLE STYLES */
+
+  @media only screen and (max-width: 63.9375rem) {
+    body.cs-open {
+      overflow: hidden;
+    }
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem;
+      background-color: #00000096; /* Contrast background */
+      border-bottom: 2px solid #fff; /* Contrast border */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.125rem, 4vw, 1.375rem);
+      font-weight: 700;
+      color: #fff; /* Contrast text */
+      line-height: 1;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-nav {
+      display: none;
+    }
+    #cs-navigation .cs-button-solid {
+      display: none;
+    }
+    #cs-navigation .cs-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0;
+      background-color: transparent;
+      border: 2px solid #fff; /* Contrast border */
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-toggle:hover {
+      background-color: var(--primary);
+    }
+    #cs-navigation .cs-box {
+      width: 1.5rem;
+      height: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #cs-navigation .cs-line {
+      width: 100%;
+      height: 2px;
+      background-color: #fff; /* Contrast lines */
+      display: block;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: all 0.3s ease;
+    }
+    #cs-navigation .cs-line1 {
+      top: 0;
+    }
+    #cs-navigation .cs-line2 {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #cs-navigation .cs-line3 {
+      bottom: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line1 {
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line2 {
+      opacity: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line3 {
+      bottom: 50%;
+      transform: translate(-50%, 50%) rotate(-45deg);
+    }
+    #cs-navigation .cs-ul-wrapper {
+      width: 100%;
+      height: auto;
+      padding-bottom: 2.4em;
+      padding-top: 1rem;
+      background-color: #000; /* Contrast background */
+      opacity: 0;
+      position: fixed;
+      top: 4.5rem; /* Position below navbar */
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s, opacity 0.3s;
+      border-bottom: 2px solid #fff; /* Contrast border */
+    }
+    #cs-navigation.cs-active .cs-ul-wrapper {
+      max-height: 30em;
+      opacity: 1;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-ul-mobile {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      line-height: 1.2em;
+      text-decoration: none;
+      margin: 0;
+      color: #fff; /* Contrast text */
+      display: block;
+      position: relative;
+      padding: 1rem;
+      transition: none; /* Instant hover effect */
+      border-bottom: 1px solid #333; /* Darker border */
+    }
+    #cs-navigation .cs-li-link:last-child {
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover {
+      background-color: var(--primary);
+      color: #000;
+    }
+
+    /* Dark Mode Mobile */
+    body.dark-mode #cs-navigation {
+        background-color: #8f8f8fab;
+        border-bottom: 2px solid #000;
+    }
+    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
+    body.dark-mode #cs-navigation .cs-li-link {
+        color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-toggle {
+        border-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-line {
+        background-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-ul-wrapper {
+        background-color: #fff;
+        border-bottom: 2px solid #000;
+    }
+  }
+  
+  /*-- -------------------------- -->
+  <---     Desktop Navigation     -->
+  <--- -------------------------- -*/
+  @media only screen and (min-width: 80.0625rem) {
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 1rem;
+      background-color: #00000096; /* Contrast background */
+      border-bottom: 2px solid #fff; /* Contrast border */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      max-width: 80rem;
+      margin: auto;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    #cs-navigation .cs-toggle {
+      display: none;
+    }
+    #cs-navigation .cs-nav {
+      display: block;
+    }
+    #cs-navigation .cs-ul-wrapper {
+      display: none;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0 auto 0 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+      font-weight: 700;
+      color: #fff; /* Contrast text */
+      text-decoration: none;
+    }
+    #cs-navigation .cs-ul {
+      display: flex;
+      align-items: center;
+      gap: clamp(1.25rem, 2.6vw, 2.25rem);
+      flex-direction: row;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      padding: 1.25rem 0.5rem;
+      flex: none;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(0.875rem, 1vw, 1rem);
+      text-decoration: none;
+      color: #fff; /* Contrast text */
+      display: block;
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: none; /* Instant hover */
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover,
+    #cs-navigation .cs-li-link.cs-active {
+      background-color: var(--primary);
+      color: #000;
+    }
+    #cs-navigation .cs-li-link:before {
+      display: none; /* Remove underline effect */
+    }
+    #cs-navigation .cs-button-solid {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 2.75em; /* Adjusted height */
+      text-align: center;
+      text-decoration: none;
+      min-width: 9.375rem;
+      padding: 0 1.5rem;
+      color: #fff; /* Contrast text */
+      background-color: transparent;
+      border: 2px solid #fff; /* Contrast border */
+      transition: none; /* Instant hover */
+      display: inline-block;
+    }
+    #cs-navigation .cs-button-solid:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Dark Mode Desktop */
+    body.dark-mode #cs-navigation {
+        background-color: #8f8f8fab;
+        border-bottom: 2px solid #000;
+    }
+    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
+    body.dark-mode #cs-navigation .cs-li-link {
+        color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-button-solid {
+        color: #000;
+        border-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-button-solid:hover {
+        background-color: #000;
+        color: #fff;
+    }
+  }
+  </style>
+  
+<script>
+  // add classes for mobile navigation toggling
+var CSbody = document.querySelector('body');
+const CSnavbarMenu = document.querySelector('#cs-navigation');
+const CShamburgerMenu = document.querySelector('#cs-navigation .cs-toggle');
+
+if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+	CShamburgerMenu.addEventListener('click', function () {
+		if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+			CShamburgerMenu.classList.toggle('cs-active');
+			CSnavbarMenu.classList.toggle('cs-active');
+			CSbody.classList.toggle('cs-open');
+			// run the function to check the aria-expanded value
+			ariaExpanded();
+		}
+	});
+}
+
+// checks the value of aria expanded on the cs-toggle button and changes it accordingly whether it is expanded or not
+function ariaExpanded() {
+	const csToggle = document.querySelector('#cs-navigation .cs-toggle');
+	if (csToggle) {
+		const csExpanded = csToggle.getAttribute('aria-expanded');
+
+		if (csExpanded === 'false') {
+			csToggle.setAttribute('aria-expanded', 'true');
+		} else {
+			csToggle.setAttribute('aria-expanded', 'false');
+		}
+	}
+}
+
+// mobile nav toggle code
+const dropDowns = Array.from(document.querySelectorAll('#cs-navigation .cs-dropdown'));
+for (const item of dropDowns) {
+	const onClick = () => {
+		item.classList.toggle('cs-active');
+	};
+	item.addEventListener('click', onClick);
+}
+                                
+</script>
+
+<script>
+// Dark Mode Toggle Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    // Apply saved theme on initial load
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            // Save theme preference to localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    }
+});
+</script>

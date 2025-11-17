@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "lastUpdated": "2024-01-01T00:00:00Z",
+    "version": "1.0.0",
+    "source": "MobileAPI.dev"
+  },
+  "categories": {
+    "phone": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPhone 15 Pro": {
+              "variants": ["128GB", "256GB", "512GB", "1TB"]
+            },
+            "iPhone 14": {
+              "variants": ["128GB", "256GB", "512GB"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy S24": {
+              "variants": ["128GB", "256GB", "512GB"]
+            },
+            "Galaxy S23": {
+              "variants": ["128GB", "256GB"]
+            }
+          }
+        }
+      }
+    },
+    "tablet": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPad Pro": {
+              "variants": ["11\"", "12.9\""]
+            },
+            "iPad Air": {
+              "variants": ["64GB", "256GB"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Tab S9": {
+              "variants": ["128GB", "256GB", "512GB"]
+            }
+          }
+        }
+      }
+    },
+    "smartwatch": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "Apple Watch Series 9": {
+              "variants": ["41mm", "45mm"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Watch 6": {
+              "variants": ["40mm", "44mm"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

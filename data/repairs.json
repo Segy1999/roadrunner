@@ -1,0 +1,32 @@
+{
+  "repairs": [
+    {
+      "id": "screen",
+      "label": "Screen Replacement",
+      "prices": {
+        "oem": 199,
+        "aftermarket": 119
+      },
+      "description": "Replace cracked/damaged display."
+    },
+    {
+      "id": "battery",
+      "label": "Battery Replacement",
+      "prices": {
+        "oem": 89,
+        "aftermarket": 49
+      },
+      "description": "Replace battery, test cycles."
+    },
+    {
+      "id": "charging",
+      "label": "Charging Port Repair",
+      "prices": {
+        "oem": 119,
+        "aftermarket": 79
+      },
+      "description": "Fix/replace charging port."
+    }
+  ],
+  "defaultPartQuality": "aftermarket" 
+}

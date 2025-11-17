@@ -1,0 +1,61 @@
+Work Description: Navigation Bar Optimization
+
+Objective: To refactor and optimize the existing navigation component to ensure it is fully responsive, functional, and visually correct on mobile and smaller desktop screen sizes.
+
+src/components/Navbar.astro
+
+HTML Structure:
+
+Locate the <nav class="cs-nav"> element. Within it, find the <button class="cs-toggle"> and the <ul id="cs-expanded" class="cs-ul" aria-expanded="false">.
+
+Move the aria-expanded="false" attribute from the <ul> element to the <button class="cs-toggle"> element.
+
+CSS Styling (@media only screen and (max-width: 63.9375rem)):
+
+In the style rule for #cs-navigation .cs-ul-wrapper, replace the transform: scaleY(0) property with max-height: 0 to control the visibility of the mobile menu.
+
+Adjust the transition property for #cs-navigation .cs-ul-wrapper to animate the max-height property, creating a smooth dropdown effect instead of the scale effect. The opacity transition should be refined to synchronize with this new max-height transition.
+
+When the .cs-active class is applied to #cs-navigation, the corresponding style for .cs-ul-wrapper should set a max-height value sufficient to display all menu items (e.g., max-height: 30em).
+
+CSS Styling (@media only screen and (min-width: 64rem)):
+
+In the style rule for #cs-navigation .cs-li, adjust the padding property to create more balanced horizontal and vertical spacing around the navigation links.
+
+In the style rule for #cs-navigation .cs-button-solid, slightly increase the line-height to better align the button's vertical size with the adjacent list items.
+
+JavaScript Logic:
+
+In the <script> tag at the bottom of the file, modify the ariaExpanded() function.
+
+This function should now target the cs-toggle button to get and set the aria-expanded attribute, instead of targeting the cs-ul element (#cs-expanded).
+
+src/pages/index.astro
+
+CSS Styling:
+
+In the main <style> block, locate the media queries for the body element's padding.
+
+In @media only screen and (max-width: 63.9375rem), slightly increase the padding-top value (e.g., from 4.5rem to 5rem).
+
+In @media only screen and (min-width: 64rem), slightly increase the padding-top value (e.g., from 6.5rem to 7rem) to ensure no page content is obscured by the fixed navigation bar.
+
+src/pages/about.astro
+
+CSS Styling:
+
+In the main <style> block, locate the media queries for the body element's padding.
+
+In @media only screen and (max-width: 63.9375rem), slightly increase the padding-top value (e.g., from 4.5rem to 5rem).
+
+In @media only screen and (min-width: 64rem), slightly increase the padding-top value (e.g., from 6.5rem to 7rem) to ensure no page content is obscured by the fixed navigation bar.
+
+src/pages/services.astro
+
+CSS Styling:
+
+In the main <style> block, locate the media queries for the body element's padding.
+
+In @media only screen and (max-width: 63.9375rem), slightly increase the padding-top value (e.g., from 4.5rem to 5rem).
+
+In @media only screen and (min-width: 64rem), slightly increase the padding-top value (e.g., from 6.5rem to 7rem) to ensure no page content is obscured by the fixed navigation bar.

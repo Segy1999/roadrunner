@@ -1,0 +1,46 @@
+# Supabase Configuration
+# This file configures your Supabase project settings, including Edge Functions and cron jobs.
+
+[project]
+# Your Supabase project reference ID
+# This will be set when you initialize Supabase locally or link to a remote project
+
+[api]
+# API configuration
+enabled = true
+port = 54321
+
+[db]
+# Database configuration
+port = 54322
+
+[studio]
+# Supabase Studio configuration
+enabled = true
+port = 54323
+
+[functions]
+# Edge Functions configuration
+
+[functions.fetchDeviceCatalog]
+verify_jwt = false
+
+[functions.getDeviceCatalog]
+verify_jwt = false
+
+# Cron job configuration for scheduled Edge Functions
+# This schedules the fetchDeviceCatalog function to run bi-weekly (every 14 days)
+# Adjust the schedule as needed using cron syntax
+# Example: "0 2 * * 0" = Every Sunday at 2 AM
+# Example: "0 2 */14 * *" = Every 14 days at 2 AM
+
+[functions.fetchDeviceCatalog.cron]
+# Uncomment and adjust the schedule as needed
+# schedule = "0 2 */14 * *"  # Every 14 days at 2 AM UTC
+# schedule = "0 2 1 * *"     # First day of every month at 2 AM UTC
+
+# Note: Cron scheduling may need to be configured in your Supabase dashboard
+# instead of this config file, depending on your Supabase hosting setup.
+# Check the Supabase documentation for the latest cron configuration method.
+
+

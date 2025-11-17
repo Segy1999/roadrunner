@@ -1,0 +1,3283 @@
+﻿--- astro.config.mjs
+
+// @ts-check
+import { defineConfig } from 'astro/config';
+
+// https://astro.build/config
+export default defineConfig({});
+
+
+--- README.md
+
+# Personal Site - Astro with Supabase Integration
+
+A modern Astro website with Supabase backend integration for device catalog management and pricing wizard functionality.
+
+## 🚀 Project Structure
+
+```text
+/
+├── public/              # Static assets
+├── src/
+│   ├── components/     # Astro components
+│   │   └── ServicesPage.astro  # Pricing Wizard component
+│   ├── lib/
+│   │   └── supabase/   # Supabase client initialization
+│   │       ├── serverClient.ts  # Server-side Supabase client
+│   │       └── browserClient.ts # Browser-side Supabase client
+│   └── pages/
+│       ├── api/        # API endpoints
+│       │   └── device-catalog.json.ts  # Catalog API endpoint
+│       ├── index.astro
+│       └── services.astro
+├── data/
+│   ├── deviceCatalog.json  # Initial device catalog (seed data)
+│   └── repairs.json        # Repair service definitions
+├── supabase/
+│   ├── functions/
+│   │   ├── fetchDeviceCatalog/  # Edge Function: Fetches catalog from MobileAPI.dev
+│   │   │   └── index.ts
+│   │   └── getDeviceCatalog/    # Edge Function: Serves catalog (optional)
+│   │       └── index.ts
+│   └── config.toml      # Supabase configuration
+├── .env.example         # Environment variables template
+└── package.json
+```
+
+## 🧞 Commands
+
+All commands are run from the root of the project:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`           |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+
+## 🔧 Setup & Configuration
+
+### 1. Environment Variables
+
+Copy `.env.example` to `.env` and fill in your credentials:
+
+```bash
+cp .env.example .env
+```
+
+Required environment variables:
+
+- **SUPABASE_URL**: Your Supabase project URL (found in Supabase dashboard)
+- **PUBLIC_SUPABASE_ANON_KEY**: Supabase anon/public key (safe for browser)
+- **SUPABASE_SERVICE_ROLE_KEY**: Supabase service role key (server-only, never expose)
+- **MOBILEAPI_KEY**: Your MobileAPI.dev API key
+
+**⚠️ Security Note**: Never commit `.env` to version control. The `.gitignore` file already excludes it.
+
+### 2. Supabase Initialization
+
+#### Server Client (`src/lib/supabase/serverClient.ts`)
+
+The server client is used in:
+- Edge Functions
+- Server-side Astro endpoints
+- Any server-only code
+
+It uses the service role key and has full access to your Supabase project.
+
+**Usage:**
+```typescript
+import { supabaseServer } from '@/lib/supabase/serverClient';
+
+// Use in server-side code only
+const { data, error } = await supabaseServer.storage
+  .from('catalogs')
+  .download('deviceCatalog.json');
+```
+
+#### Browser Client (`src/lib/supabase/browserClient.ts`)
+
+The browser client is optional and uses only the public anon key. Use it for:
+- Client-side authentication
+- Public data access
+- Real-time subscriptions
+
+**Usage:**
+```typescript
+import { supabaseBrowser } from '@/lib/supabase/browserClient';
+
+if (supabaseBrowser) {
+  // Use in browser code
+}
+```
+
+### 3. Supabase Storage Setup
+
+Create a Storage bucket named `catalogs` in your Supabase dashboard:
+
+1. Go to Storage in your Supabase dashboard
+2. Create a new bucket named `catalogs`
+3. Choose bucket visibility:
+   - **Public**: Allows direct access via Storage URL
+   - **Private**: Requires API endpoint or Edge Function for access
+
+### 4. Device Catalog
+
+The device catalog (`deviceCatalog.json`) is stored in Supabase Storage and contains:
+- Categories (phone, laptop, tablet)
+- Brands for each category
+- Models for each brand
+- Variants for each model
+
+**Initial Catalog**: `data/deviceCatalog.json` contains seed data. The Edge Function will replace this with real data from MobileAPI.dev.
+
+## 📡 Edge Functions
+
+### fetchDeviceCatalog
+
+**Location**: `supabase/functions/fetchDeviceCatalog/index.ts`
+
+**Purpose**: Fetches device catalog data from MobileAPI.dev and stores it in Supabase Storage.
+
+**How it works**:
+1. Reads `MOBILEAPI_KEY` from environment
+2. Fetches categories from MobileAPI.dev
+3. For each category, fetches brands
+4. For each brand, fetches models
+5. For each model, fetches variants
+6. Normalizes and structures the data
+7. Uploads `deviceCatalog.json` to Supabase Storage
+8. Respects rate limits (1 second delay between requests)
+
+**Manual Execution**:
+```bash
+# Using Supabase CLI
+supabase functions invoke fetchDeviceCatalog
+
+# Or via HTTP (if deployed)
+curl -X POST https://<project>.supabase.co/functions/v1/fetchDeviceCatalog \
+  -H "Authorization: Bearer <anon-key>"
+```
+
+**Scheduling**: Configure in `supabase/config.toml` or via Supabase dashboard cron jobs.
+
+### getDeviceCatalog (Optional)
+
+**Location**: `supabase/functions/getDeviceCatalog/index.ts`
+
+**Purpose**: Serves the device catalog from private Storage buckets without exposing service keys.
+
+Use this if your Storage bucket is private and you prefer Edge Functions over Astro API endpoints.
+
+## 🔄 Data Pipeline
+
+### How the Pricing Wizard Loads Data
+
+1. **User selects category** → Pricing Wizard loads `deviceCatalog.json`
+2. **Catalog source priority**:
+   - First: API endpoint `/api/device-catalog.json` (works for private buckets)
+   - Fallback: Direct Storage URL (if bucket is public)
+   - Final fallback: Local `localBrands` object (limited data)
+
+3. **If catalog loads successfully**:
+   - Extracts brands from catalog for selected category
+   - Extracts models for selected brand
+   - Extracts variants for selected model
+
+4. **If catalog fails to load**:
+   - Shows warning message
+   - Uses `localBrands` fallback (limited brands only)
+   - Models and variants will be empty
+
+### Scheduled Updates
+
+The `fetchDeviceCatalog` Edge Function should run on a schedule (bi-weekly or monthly) to keep the catalog up-to-date.
+
+**Configure in Supabase Dashboard**:
+1. Go to Database → Cron Jobs
+2. Add new cron job:
+   - Function: `fetchDeviceCatalog`
+   - Schedule: `0 2 */14 * *` (every 14 days at 2 AM UTC)
+   - Or: `0 2 1 * *` (first day of month at 2 AM UTC)
+
+## 🎯 Pricing Wizard Component
+
+**Location**: `src/components/ServicesPage.astro`
+
+**Features**:
+- ✅ Loads device catalog from Supabase (no third-party browser calls)
+- ✅ Fallback to local brands if catalog unavailable
+- ✅ Warning UI when using fallback mode
+- ✅ No Icecat or MobileAPI.dev calls from browser
+- ✅ All data fetching happens server-side
+
+**Removed**:
+- ❌ Icecat API integration
+- ❌ Mock model/variant generators
+- ❌ Third-party browser API calls
+
+## 🔐 Security Notes
+
+1. **Service Role Key**: Never expose `SUPABASE_SERVICE_ROLE_KEY` to the browser. It's only used in:
+   - Edge Functions
+   - Server-side Astro endpoints
+   - Server-only code
+
+2. **Anon Key**: The `PUBLIC_SUPABASE_ANON_KEY` is safe for browser use but has limited permissions.
+
+3. **Environment Variables**: All sensitive keys are in `.env`, which is excluded from git.
+
+4. **Storage Bucket**: Choose public or private based on your security requirements:
+   - **Public**: Simpler, direct access
+   - **Private**: More secure, requires API endpoint or Edge Function
+
+## 📚 API Endpoints
+
+### GET `/api/device-catalog.json`
+
+Serves the device catalog from Supabase Storage. Use this if your Storage bucket is private.
+
+**Response**: JSON object with device catalog structure
+
+**Caching**: 1 hour (`Cache-Control: public, max-age=3600`)
+
+## 🛠️ Development
+
+### Local Development
+
+1. Install dependencies: `npm install`
+2. Set up `.env` file with your credentials
+3. Start dev server: `npm run dev`
+4. Visit `http://localhost:4321`
+
+### Deploying Edge Functions
+
+The Supabase CLI is required to deploy Edge Functions. Choose one of these installation methods:
+
+#### Option 1: Use npx (No Installation Required - Recommended)
+
+You can use `npx` to run Supabase CLI commands without installing:
+
+```bash
+# Deploy a function
+npx supabase functions deploy fetchDeviceCatalog
+
+# Or deploy all functions
+npx supabase functions deploy
+```
+
+#### Option 2: Install via Scoop (Windows)
+
+```powershell
+# Install Scoop if you don't have it
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
+
+# Install Supabase CLI
+scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+scoop install supabase
+```
+
+#### Option 3: Direct Download
+
+Download the latest release from: https://github.com/supabase/cli/releases
+
+#### Deploying to Production
+
+Before deploying, you need to link your project:
+
+```bash
+# Link to your Supabase project (use npx if CLI not installed)
+npx supabase link --project-ref your-project-ref
+
+# Deploy functions
+npx supabase functions deploy fetchDeviceCatalog
+npx supabase functions deploy getDeviceCatalog  # Optional
+```
+
+#### Testing Edge Functions Locally (Requires Docker)
+
+```bash
+# Start local Supabase (requires Docker Desktop)
+npx supabase start
+
+# Serve functions locally
+npx supabase functions serve fetchDeviceCatalog
+```
+
+### Building for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+## 📝 Additional Resources
+
+- [Astro Documentation](https://docs.astro.build)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
+- [MobileAPI.dev Documentation](https://mobileapi.dev/docs)
+
+## 👀 Want to learn more?
+
+Feel free to check [Astro documentation](https://docs.astro.build) or [Supabase documentation](https://supabase.com/docs).
+
+
+--- tsconfig.json
+
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
+
+
+--- .astro\content-assets.mjs
+
+export default new Map();
+
+--- .astro\content-modules.mjs
+
+export default new Map();
+
+--- .astro\data-store.json
+
+[["Map",1,2],"meta::meta",["Map",3,4,5,6],"astro-version","5.15.3","astro-config-digest","{\"root\":{},\"srcDir\":{},\"publicDir\":{},\"outDir\":{},\"cacheDir\":{},\"compressHTML\":true,\"base\":\"/\",\"trailingSlash\":\"ignore\",\"output\":\"static\",\"scopedStyleStrategy\":\"attribute\",\"build\":{\"format\":\"directory\",\"client\":{},\"server\":{},\"assets\":\"_astro\",\"serverEntry\":\"entry.mjs\",\"redirects\":true,\"inlineStylesheets\":\"auto\",\"concurrency\":1},\"server\":{\"open\":false,\"host\":false,\"port\":4321,\"streaming\":true,\"allowedHosts\":[]},\"redirects\":{},\"image\":{\"endpoint\":{\"route\":\"/_image\"},\"service\":{\"entrypoint\":\"astro/assets/services/sharp\",\"config\":{}},\"domains\":[],\"remotePatterns\":[],\"responsiveStyles\":false},\"devToolbar\":{\"enabled\":true},\"markdown\":{\"syntaxHighlight\":{\"type\":\"shiki\",\"excludeLangs\":[\"math\"]},\"shikiConfig\":{\"langs\":[],\"langAlias\":{},\"theme\":\"github-dark\",\"themes\":{},\"wrap\":false,\"transformers\":[]},\"remarkPlugins\":[],\"rehypePlugins\":[],\"remarkRehype\":{},\"gfm\":true,\"smartypants\":true},\"security\":{\"checkOrigin\":true,\"allowedDomains\":[]},\"env\":{\"schema\":{},\"validateSecrets\":false},\"experimental\":{\"clientPrerender\":false,\"contentIntellisense\":false,\"headingIdCompat\":false,\"preserveScriptOrder\":false,\"liveContentCollections\":false,\"csp\":false,\"staticImportMetaEnv\":false,\"chromeDevtoolsWorkspace\":false,\"failOnPrerenderConflict\":false},\"legacy\":{\"collections\":false}}"]
+
+--- .astro\settings.json
+
+{
+	"_variables": {
+		"lastUpdateCheck": 1763336996483
+	}
+}
+
+--- .astro\types.d.ts
+
+/// <reference types="astro/client" />
+
+
+--- data\deviceCatalog.json
+
+{
+  "metadata": {
+    "lastUpdated": "2024-01-01T00:00:00Z",
+    "version": "1.0.0",
+    "source": "MobileAPI.dev"
+  },
+  "categories": {
+    "phone": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPhone 15 Pro": {
+              "variants": ["128GB", "256GB", "512GB", "1TB"]
+            },
+            "iPhone 14": {
+              "variants": ["128GB", "256GB", "512GB"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy S24": {
+              "variants": ["128GB", "256GB", "512GB"]
+            },
+            "Galaxy S23": {
+              "variants": ["128GB", "256GB"]
+            }
+          }
+        }
+      }
+    },
+    "tablet": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPad Pro": {
+              "variants": ["11\"", "12.9\""]
+            },
+            "iPad Air": {
+              "variants": ["64GB", "256GB"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Tab S9": {
+              "variants": ["128GB", "256GB", "512GB"]
+            }
+          }
+        }
+      }
+    },
+    "smartwatch": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "Apple Watch Series 9": {
+              "variants": ["41mm", "45mm"]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Watch 6": {
+              "variants": ["40mm", "44mm"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+--- data\repairs.json
+
+{
+  "repairs": [
+    {
+      "id": "screen",
+      "label": "Screen Replacement",
+      "prices": {
+        "oem": 199,
+        "aftermarket": 119
+      },
+      "description": "Replace cracked/damaged display."
+    },
+    {
+      "id": "battery",
+      "label": "Battery Replacement",
+      "prices": {
+        "oem": 89,
+        "aftermarket": 49
+      },
+      "description": "Replace battery, test cycles."
+    },
+    {
+      "id": "charging",
+      "label": "Charging Port Repair",
+      "prices": {
+        "oem": 119,
+        "aftermarket": 79
+      },
+      "description": "Fix/replace charging port."
+    }
+  ],
+  "defaultPartQuality": "aftermarket" 
+}
+
+
+--- src\components\Button.astro
+
+<a href="/services.html" class="cs-button-6" aria-label="read more about us">
+    Book Your Repair Now
+    <!--SVG Arrow-->
+    <svg class="cs-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.92 11.62C17.8724 11.4973 17.801 11.3851 17.71 11.29L12.71 6.29C12.6168 6.19676 12.5061 6.1228 12.3842 6.07234C12.2624 6.02188 12.1319 5.99591 12 5.99591C11.7337 5.99591 11.4783 6.1017 11.29 6.29C11.1968 6.38324 11.1228 6.49393 11.0723 6.61575C11.0219 6.73758 10.9959 6.86814 10.9959 7C10.9959 7.2663 11.1017 7.5217 11.29 7.71L14.59 11H7C6.73478 11 6.48043 11.1054 6.29289 11.2929C6.10536 11.4804 6 11.7348 6 12C6 12.2652 6.10536 12.5196 6.29289 12.7071C6.48043 12.8946 6.73478 13 7 13H14.59L11.29 16.29C11.1963 16.383 11.1219 16.4936 11.0711 16.6154C11.0203 16.7373 10.9942 16.868 10.9942 17C10.9942 17.132 11.0203 17.2627 11.0711 17.3846C11.1219 17.5064 11.1963 17.617 11.29 17.71C11.383 17.8037 11.4936 17.8781 11.6154 17.9289C11.7373 17.9797 11.868 18.0058 12 18.0058C12.132 18.0058 12.2627 17.9797 12.3846 17.9289C12.5064 17.8781 12.617 17.8037 12.71 17.71L17.71 12.71C17.801 12.6149 17.8724 12.5028 17.92 12.38C18.02 12.1365 18.02 11.8635 17.92 11.62Z" fill="#1A1A1A"/>
+    </svg>
+</a>
+                    
+<style>
+    .cs-button-6 {
+        text-align: center;
+        font-size: 1rem;
+        line-height: 3.5rem;
+        text-decoration: none;
+        font-weight: 700;
+        min-width: 10.875rem;
+        margin: auto;
+        color: var(--headerColor);
+        padding: 0 1.5rem;
+        box-sizing: border-box;
+        background-color: transparent;
+        border: 2px solid var(--headerColor);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 1;
+        transition: none; /* No animation */
+    }
+    .cs-button-6:hover {
+        background-color: var(--headerColor);
+        color: var(--backgroundColor);
+    }
+    .cs-button-6:before {
+        display: none; /* Remove animated element */
+    }
+    .cs-button-6 .cs-icon path {
+        fill: var(--headerColor);
+        transition: fill 0s; /* No animation */
+    }
+    .cs-button-6:hover .cs-icon path {
+        fill: var(--backgroundColor);
+    }
+    </style>
+
+--- src\components\Gallery.astro
+
+<!-- ============================================ -->
+<!--                   Gallery                    -->
+<!-- ============================================ -->
+
+<section id="gallery-1897">
+    <div class="cs-container">
+        <div class="cs-content">
+            <div class="cs-flex">
+                
+                <h2 class="cs-title" data-aos="fade-up">Witness The Difference and Our Results</h2>
+            </div>
+            <a class="cs-button-solid" href="" data-aos="fade-up" data-aos-delay="200">View All</a>
+        </div>
+        <!--Gallery-->
+        
+        <div class="cs-gallery">
+            <!--
+            <div class="cs-item">
+                <p class="cs-item-text">iPhone Screen Repair</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            <div class="cs-item">
+                <p class="cs-item-text">Phone Battery Replacement</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            -->
+            <div class="cs-item" data-aos="zoom-in-up">
+                <p class="cs-item-text">Gaming Console Cleanup/Overheating Repair</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/dirty_p5.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/dirty_p5.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/dirty_p5.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/IMG_9492.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/IMG_9492.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/IMG_9492.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            <div class="cs-item" data-aos="zoom-in-up" data-aos-delay="200">
+                <p class="cs-item-text">Laptop Repair and Upgrade</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/lap_assembly.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/lap_assembly.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/lap_assembly.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/lap_completed.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/lap_completed.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/lap_completed.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img class="cs-graphic cs-graphic-top" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/derma-bg-1.svg" alt="graphic" width="517" height="469" loading="lazy" decoding="async" aria-hidden="true" >
+    <img class="cs-graphic cs-graphic-bottom" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/derma-bg-2.svg" alt="graphic" width="517" height="469" loading="lazy" decoding="async" aria-hidden="true" >
+</section>
+                                
+<style>
+    /*-- -------------------------- -->
+<---          Gallery           -->
+<--- -------------------------- -*/
+
+/* Mobile - 360px */
+@media only screen and (min-width: 0rem) {
+  #gallery-1897 {
+    padding: var(--sectionPadding);
+    background-color: var(--backgroundColor);
+    overflow: hidden;
+    position: relative;
+  }
+  #gallery-1897 .cs-container {
+    width: 100%;
+    max-width: 80rem;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    /* 48px - 64px */
+    gap: clamp(3rem, 6vw, 4rem);
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #gallery-1897 .cs-content {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+  }
+  #gallery-1897 .cs-title {
+    font-family: 'Francois One', sans-serif;
+    max-width: 25ch;
+    margin: 0;
+  }
+  #gallery-1897 .cs-button-solid {
+    font-size: 1rem;
+    font-weight: 700;
+    /* 46px - 56px */
+    line-height: clamp(2.875em, 5.5vw, 3.5em);
+    text-align: center;
+    text-decoration: none;
+    min-width: 9.375rem;
+    margin: 0;
+    /* prevents padding from adding to the width */
+    box-sizing: border-box;
+    padding: 0 1.5rem;
+    background-color: var(--secondary);
+    overflow: hidden;
+    color: var(--headerColor);
+    border: none;
+    border-radius: 0.25rem;
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s;
+  }
+  #gallery-1897 .cs-button-solid:before {
+    content: "";
+    width: 0;
+    height: 100%;
+    background: var(--headerColor);
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: width 0.3s;
+  }
+  #gallery-1897 .cs-button-solid:hover {
+    color: var(--backgroundColor);
+  }
+  #gallery-1897 .cs-button-solid:hover:before {
+    width: 100%;
+  }
+  #gallery-1897 .cs-gallery {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: row;
+    /* 16px - 20px */
+    gap: clamp(1rem, 2vw, 1.25rem);
+    z-index: 1;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #gallery-1897 .cs-item {
+    width: 100%;
+    padding: clamp(1rem, 4vw, 2rem);
+    background-color: var(--backgroundColor);
+    border: 4px solid var(--headerColor);
+    box-shadow: 6px 6px 0 0 var(--headerColor);
+    display: grid;
+    column-gap: clamp(0.5rem, 2vw, 1rem);
+    row-gap: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.1s, box-shadow 0.1s;
+    cursor: pointer;
+  }
+  #gallery-1897 .cs-item:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 0 var(--headerColor);
+  }
+  #gallery-1897 .cs-item-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2em;
+    margin: 0;
+    color: var(--headerColor);
+    grid-column: span 2;
+  }
+  #gallery-1897 .cs-picture-group {
+    height: clamp(10rem, 23vw, 20rem);
+    overflow: hidden;
+    grid-column: span 1;
+    position: relative;
+    border: 1px solid var(--headerColor);
+    box-sizing: border-box;
+    display: block;
+  }
+  #gallery-1897 .cs-picture {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+  #gallery-1897 .cs-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+  #gallery-1897 .cs-tag {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.5em;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary);
+    color: var(--headerColor);
+    border: 1px solid var(--headerColor);
+    position: absolute;
+    bottom: clamp(0.5rem, 2vw, 1rem);
+    left: clamp(0.5rem, 2vw, 1rem);
+  }
+  #gallery-1897 .cs-graphic {
+    display: none;
+  }
+  #gallery-1897 .cs-graphic-top {
+    top: 0;
+    right: -8.875rem;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    bottom: 0;
+    left: 0;
+  }
+}
+/* Tablet - 600px */
+@media only screen and (min-width: 37.5rem) {
+  #gallery-1897 .cs-content {
+    text-align: left;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  #gallery-1897 .cs-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  #gallery-1897 .cs-graphic-top {
+    right: -8.375rem;
+    transform: initial;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    left: -7.5rem;
+    transform: initial;
+  }
+}
+/* Desktop - 1600px */
+@media only screen and (min-width: 100rem) {
+  #gallery-1897 .cs-graphic-top {
+    margin-left: 15rem;
+    left: 50%;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    margin-right: 16.25rem;
+    right: 50%;
+    left: initial;
+  }
+}
+                                
+</style>
+
+--- src\components\HomeServicePage.astro
+
+<!-- ============================================ -->
+<!--                  Services                    -->
+<!-- ============================================ -->
+
+<section id="services-218">
+    <div class="cs-container">
+        <div class="cs-content">
+            
+            <h2 class="cs-title">Road Runner Repairs</h2>
+            <p class="cs-text">
+                With over 200+ customers served across the GTA, Road Runner Repairs is the go-to destination for all your tech repair needs.
+            </p>
+            <a href="/services.html" class="cs-button-solid">Get Free Quote</a>
+        </div>
+        <ul class="cs-card-group">
+            <li class="cs-item" data-aos="fade-up">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/phone-225-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Cracked Screen? Dead Battery? We'll Bring Your Device Back to Life.</h3>
+                <p class="cs-item-text">
+                    Our certified technicians repair all major smartphone and tablet brands, including iPhone, Samsung, Google, and Huawei. Whether it's a broken screen, a faulty charging port, or a software issue, we handle it with care and precision. We use only high-quality replacement parts to ensure your device performs like new and stays reliable long after the repair.
+                </p>
+            </li>
+            <li class="cs-item" data-aos="fade-up" data-aos-delay="200">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/desktop-232-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Laptop & Computer Services</h3>
+                <p class="cs-item-text">
+                    From startup failures to sluggish performance, our team provides complete diagnostic and repair services for laptops and computers. We work with both Windows and macOS devices, solving hardware and software issues efficiently to minimize your downtime. You can trust us to get your system running smoothly again so you can focus on what matters most.
+                </p>
+            </li>
+            <li class="cs-item" data-aos="fade-up" data-aos-delay="400">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/wifi-cover-1032-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Device Protection & Accessories</h3>
+                <p class="cs-item-text">We offer a wide selection of protective cases, screen protectors, chargers, and other accessories designed to extend your device's life. Our team can help you choose the right products to fit your needs and prevent future damage. It's a simple way to save time, money, and frustration down the road.
+                </p>
+            </li>
+        </ul>
+        <!-- Floating Watermark -->
+        <img class="cs-watermark" aria-hidden="true" loading="lazy" decoding="async" src="/photos/RRR.png" alt="icon" width="77" height="77">
+    </div>
+</section>
+                                
+<style>
+    /*-- -------------------------- -->
+<---         Services           -->
+<--- -------------------------- -*/
+
+/* Mobile */
+@media only screen and (min-width: 0rem) {
+    #services-218 {
+        padding: var(--sectionPadding);
+    }
+    #services-218 .cs-container {
+        width: 100%;
+        /* changes to 1280px at tablet */
+        max-width: 34.375rem;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* 48px - 64px */
+        gap: clamp(3rem, 6vw, 4rem);
+    }
+    #services-218 .cs-content {
+        /* set text align to left if content needs to be left aligned */
+        text-align: left;
+        width: 100%;
+        max-width: 32.625rem;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        /* centers content horizontally, set to flex-start to left align */
+        align-items: flex-start;
+    }
+    #services-218 .cs-title {
+        font-family: 'Francois One', sans-serif;
+        font-size: 2rem;
+    }
+
+    #services-218 .cs-text {
+        margin-bottom: 1rem;
+    }
+    #services-218 .cs-text:last-of-type {
+        margin-bottom: 2rem;
+    }
+    #services-218 .cs-button-solid {
+        font-size: 1rem;
+        line-height: 3rem;
+        text-decoration: none;
+        font-weight: 700;
+        text-align: center;
+        margin: 0;
+        color: var(--headerColor);
+        min-width: 9.375rem;
+        padding: 0 1.5rem;
+        background-color: var(--primary);
+        border: 2px solid var(--headerColor);
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        box-sizing: border-box;
+        transition: none;
+    }
+    #services-218 .cs-button-solid:before {
+        display: none;
+    }
+    #services-218 .cs-button-solid:hover {
+        background-color: var(--headerColor);
+        color: var(--primary);
+    }
+    #services-218 .cs-card-group {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    #services-218 .cs-item {
+        list-style: none;
+        width: 100%;
+        margin-right: 0.625rem;
+        padding: 2.75rem 2rem;
+        box-sizing: border-box;
+        background-color: var(--backgroundColor);
+        border: 4px solid var(--headerColor);
+        box-shadow: 6px 6px 0 0 var(--headerColor);
+        position: relative;
+        transition: transform 0.1s, box-shadow 0.1s;
+        cursor: pointer;
+    }
+    #services-218 .cs-item:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 0 var(--headerColor);
+    }
+    #services-218 .cs-item:before {
+        display: none;
+    }
+    #services-218 .cs-icon {
+        /* 60px - 77px */
+        width: clamp(3.75rem, 7.6vw, 4.8125rem);
+        height: auto;
+        margin-bottom: 2.5rem;
+        display: block;
+    }
+    body.dark-mode #services-218 .cs-icon {
+        filter: brightness(0) invert(1);
+    }
+    #services-218 .cs-h3 {
+        font-family: 'Francois One', sans-serif;
+        /* 20px - 25px */
+        font-size: clamp(1.25rem, 1.5vw, 1.5625rem);
+        line-height: 1.2em;
+        margin: 0;
+        margin-bottom: 1rem;
+        color: var(--headerColor);
+        font-weight: bold;
+    }
+    #services-218 .cs-item-text {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 1rem;
+        line-height: 1.5em;
+        margin: 0;
+        color: var(--bodyTextColor);
+    }
+    #services-218 .cs-watermark {
+        display: none;
+    }
+}
+/* Tablet */
+@media only screen and (min-width: 48rem) {
+    #services-218 .cs-container {
+        max-width: 80rem;
+        position: relative;
+    }
+    #services-218 .cs-content {
+        width: 50%;
+    }
+    #services-218 .cs-card-group {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+    }
+    #services-218 .cs-item {
+        grid-column: span 4;
+        grid-row: span 1;
+        margin: 0;
+        /* makes each card the same height if you add or remove lines of text */
+        align-self: stretch;
+    }
+    #services-218 .cs-watermark {
+        width: 30%;
+        max-width: 14rem;
+        height: auto;
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: block;
+    }
+}
+
+                                
+</style>
+
+--- src\components\Navbar.astro
+
+---
+const currentPath = Astro.url.pathname;
+const isActive = (path: string) => currentPath === path;
+---
+
+<header id="cs-navigation">
+  <div class="cs-container">
+      <!--Nav Logo (Text)-->
+      <a href="/" class="cs-logo" aria-label="back to home">
+          <span class="cs-logo-text">R³</span>
+      </a>
+      <!--Navigation List-->
+      <nav class="cs-nav" role="navigation">
+          <ul id="cs-expanded" class="cs-ul">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class={ `cs-li-link ${isActive('/faq') ? 'cs-active' : ''}`}>
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </nav>
+      <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+      <div class="cs-ul-wrapper">
+          <ul class="cs-ul-mobile">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class="cs-li-link">
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </div>
+      <a href="" class="cs-button-solid cs-nav-button">Contact Us</a>
+      <!--Mobile/Medium Desktop Nav Toggle-->
+      <button class="cs-toggle" aria-label="mobile menu toggle" aria-expanded="false">
+          <div class="cs-box" aria-hidden="true">
+              <span class="cs-line cs-line1" aria-hidden="true"></span>
+              <span class="cs-line cs-line2" aria-hidden="true"></span>
+              <span class="cs-line cs-line3" aria-hidden="true"></span>
+          </div>
+      </button>
+      <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+       <button id="dark-mode-toggle" aria-label="dark mode toggle">
+          <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
+          <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
+      </button> 
+  </div>
+</header>
+                                                              
+<style>
+  /*-- -------------------------- -->
+  <---     Mobile Navigation      -->
+  <--- -------------------------- -*/
+  
+  /* START OF DARK MODE TOGGLE STYLES */
+  #dark-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: transparent;
+    border: 2px solid #fff;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  #dark-mode-toggle .cs-moon {
+    display: block;
+    width: 1.25rem;
+    height: auto;
+    fill: #fff;
+  }
+
+  #dark-mode-toggle .cs-sun {
+    display: none;
+    width: 1.25rem;
+    height: auto;
+  }
+  
+  body.dark-mode #dark-mode-toggle {
+      border-color: #000;
+  }
+  
+  body.dark-mode #dark-mode-toggle .cs-moon {
+    display: none;
+  }
+
+  body.dark-mode #dark-mode-toggle .cs-sun {
+    display: block;
+  }
+  /* END OF DARK MODE TOGGLE STYLES */
+
+  @media only screen and (max-width: 63.9375rem) {
+    body.cs-open {
+      overflow: hidden;
+    }
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem;
+      background-color: #00000096; /* Contrast background */
+      border-bottom: 2px solid #fff; /* Contrast border */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.125rem, 4vw, 1.375rem);
+      font-weight: 700;
+      color: #fff; /* Contrast text */
+      line-height: 1;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-nav {
+      display: none;
+    }
+    #cs-navigation .cs-button-solid {
+      display: none;
+    }
+    #cs-navigation .cs-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0;
+      background-color: transparent;
+      border: 2px solid #fff; /* Contrast border */
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-toggle:hover {
+      background-color: var(--primary);
+    }
+    #cs-navigation .cs-box {
+      width: 1.5rem;
+      height: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #cs-navigation .cs-line {
+      width: 100%;
+      height: 2px;
+      background-color: #fff; /* Contrast lines */
+      display: block;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: all 0.3s ease;
+    }
+    #cs-navigation .cs-line1 {
+      top: 0;
+    }
+    #cs-navigation .cs-line2 {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #cs-navigation .cs-line3 {
+      bottom: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line1 {
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line2 {
+      opacity: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line3 {
+      bottom: 50%;
+      transform: translate(-50%, 50%) rotate(-45deg);
+    }
+    #cs-navigation .cs-ul-wrapper {
+      width: 100%;
+      height: auto;
+      padding-bottom: 2.4em;
+      padding-top: 1rem;
+      background-color: #000; /* Contrast background */
+      opacity: 0;
+      position: fixed;
+      top: 4.5rem; /* Position below navbar */
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s, opacity 0.3s;
+      border-bottom: 2px solid #fff; /* Contrast border */
+    }
+    #cs-navigation.cs-active .cs-ul-wrapper {
+      max-height: 30em;
+      opacity: 1;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-ul-mobile {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      line-height: 1.2em;
+      text-decoration: none;
+      margin: 0;
+      color: #fff; /* Contrast text */
+      display: block;
+      position: relative;
+      padding: 1rem;
+      transition: none; /* Instant hover effect */
+      border-bottom: 1px solid #333; /* Darker border */
+    }
+    #cs-navigation .cs-li-link:last-child {
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover {
+      background-color: var(--primary);
+      color: #000;
+    }
+
+    /* Dark Mode Mobile */
+    body.dark-mode #cs-navigation {
+        background-color: #8f8f8fab;
+        border-bottom: 2px solid #000;
+    }
+    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
+    body.dark-mode #cs-navigation .cs-li-link {
+        color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-toggle {
+        border-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-line {
+        background-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-ul-wrapper {
+        background-color: #fff;
+        border-bottom: 2px solid #000;
+    }
+  }
+  
+  /*-- -------------------------- -->
+  <---     Desktop Navigation     -->
+  <--- -------------------------- -*/
+  @media only screen and (min-width: 80.0625rem) {
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 1rem;
+      background-color: #00000096; /* Contrast background */
+      border-bottom: 2px solid #fff; /* Contrast border */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      max-width: 80rem;
+      margin: auto;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    #cs-navigation .cs-toggle {
+      display: none;
+    }
+    #cs-navigation .cs-nav {
+      display: block;
+    }
+    #cs-navigation .cs-ul-wrapper {
+      display: none;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0 auto 0 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+      font-weight: 700;
+      color: #fff; /* Contrast text */
+      text-decoration: none;
+    }
+    #cs-navigation .cs-ul {
+      display: flex;
+      align-items: center;
+      gap: clamp(1.25rem, 2.6vw, 2.25rem);
+      flex-direction: row;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      padding: 1.25rem 0.5rem;
+      flex: none;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(0.875rem, 1vw, 1rem);
+      text-decoration: none;
+      color: #fff; /* Contrast text */
+      display: block;
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: none; /* Instant hover */
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover,
+    #cs-navigation .cs-li-link.cs-active {
+      background-color: var(--primary);
+      color: #000;
+    }
+    #cs-navigation .cs-li-link:before {
+      display: none; /* Remove underline effect */
+    }
+    #cs-navigation .cs-button-solid {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 2.75em; /* Adjusted height */
+      text-align: center;
+      text-decoration: none;
+      min-width: 9.375rem;
+      padding: 0 1.5rem;
+      color: #fff; /* Contrast text */
+      background-color: transparent;
+      border: 2px solid #fff; /* Contrast border */
+      transition: none; /* Instant hover */
+      display: inline-block;
+    }
+    #cs-navigation .cs-button-solid:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Dark Mode Desktop */
+    body.dark-mode #cs-navigation {
+        background-color: #8f8f8fab;
+        border-bottom: 2px solid #000;
+    }
+    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
+    body.dark-mode #cs-navigation .cs-li-link {
+        color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-button-solid {
+        color: #000;
+        border-color: #000;
+    }
+    body.dark-mode #cs-navigation .cs-button-solid:hover {
+        background-color: #000;
+        color: #fff;
+    }
+  }
+  </style>
+  
+<script>
+  // add classes for mobile navigation toggling
+var CSbody = document.querySelector('body');
+const CSnavbarMenu = document.querySelector('#cs-navigation');
+const CShamburgerMenu = document.querySelector('#cs-navigation .cs-toggle');
+
+if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+	CShamburgerMenu.addEventListener('click', function () {
+		if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+			CShamburgerMenu.classList.toggle('cs-active');
+			CSnavbarMenu.classList.toggle('cs-active');
+			CSbody.classList.toggle('cs-open');
+			// run the function to check the aria-expanded value
+			ariaExpanded();
+		}
+	});
+}
+
+// checks the value of aria expanded on the cs-toggle button and changes it accordingly whether it is expanded or not
+function ariaExpanded() {
+	const csToggle = document.querySelector('#cs-navigation .cs-toggle');
+	if (csToggle) {
+		const csExpanded = csToggle.getAttribute('aria-expanded');
+
+		if (csExpanded === 'false') {
+			csToggle.setAttribute('aria-expanded', 'true');
+		} else {
+			csToggle.setAttribute('aria-expanded', 'false');
+		}
+	}
+}
+
+// mobile nav toggle code
+const dropDowns = Array.from(document.querySelectorAll('#cs-navigation .cs-dropdown'));
+for (const item of dropDowns) {
+	const onClick = () => {
+		item.classList.toggle('cs-active');
+	};
+	item.addEventListener('click', onClick);
+}
+                                
+</script>
+
+<script>
+// Dark Mode Toggle Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    // Apply saved theme on initial load
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            // Save theme preference to localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    }
+});
+</script>
+
+--- src\components\ServicesPage.astro
+
+
+<section id="pricing-wizard-001" data-aos="fade-in">
+    <div class="pw-step" id="pw-step-1">
+      <h2 class="pw-title">1. Choose your product</h2>
+      <div class="pw-controls">
+        <div class="pw-field">
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="">Select</option>
+            <option value="phone">Phone</option>
+            <option value="laptop">Laptop</option>
+            <option value="tablet">Tablet</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="brand">Brand</label>
+          <select id="brand" disabled>
+            <option value="">Select category first</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="model">Model</label>
+          <select id="model" disabled>
+            <option value="">Select brand first</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="variant">Variant</label>
+          <select id="variant" disabled>
+            <option value="">Select model first</option>
+          </select>
+        </div>
+  
+        <button id="to-phase-2" disabled>Continue</button>
+      </div>
+    </div>
+  
+    <div class="pw-step" id="pw-step-2" style="display:none;">
+      <h2 class="pw-title">2. Pick a repair & parts</h2>
+      <div id="repairs-list" class="pw-repairs"></div>
+      <div class="pw-actions">
+        <button id="back-to-1">Back</button>
+        <button id="to-phase-3" disabled>Next: Booking</button>
+      </div>
+    </div>
+  
+    <div class="pw-step" id="pw-step-3" style="display:none;">
+      <h2 class="pw-title">3. Booking details</h2>
+      <form id="booking-form">
+        <div class="pw-field"><label>Name<input name="name" required></label></div>
+        <div class="pw-field"><label>Email<input name="email" type="email" required></label></div>
+        <div class="pw-field"><label>Phone<input name="phone" required></label></div>
+        <div class="pw-field"><label>Issue description<textarea name="desc"></textarea></label></div>
+        <div class="pw-field"><label>Photos<input type="file" id="photos" name="photos" accept="image/*" multiple></label></div>
+  
+        <div class="pw-actions">
+          <button type="button" id="back-to-2">Back</button>
+          <button type="submit" id="submit-booking">Submit Booking</button>
+        </div>
+      </form>
+      <div id="submission-status" aria-live="polite"></div>
+    </div>
+  </section>
+  
+<style is:global>
+    #pricing-wizard-001 { font-family: 'IBM Plex Mono', monospace; padding: 14px; max-width:720px; margin:0 auto; }
+    .pw-title { font-size:1.125rem; margin-bottom:1rem; color: var(--headerColor); }
+    .pw-field { 
+        margin-bottom:1rem; 
+        display:flex; 
+        flex-direction:column; 
+        gap:0.5rem; 
+    }
+    .pw-field label { 
+        font-size:.875rem; 
+        color: var(--bodyTextColor);
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    /* Ensure label text appears above inputs */
+    .pw-field label > input,
+    .pw-field label > textarea,
+    .pw-field label > select {
+        margin-top: 0;
+    }
+    .pw-field input, .pw-field select, .pw-field textarea {
+        padding: 10px;
+        border: 2px solid var(--headerColor);
+        border-radius: 0; /* Ensure no radius */
+        font-size: 1rem;
+        font-family: 'IBM Plex Mono', monospace;
+        background-color: var(--backgroundColor);
+        color: var(--bodyTextColor);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .pw-field textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    .pw-field input[type="file"] {
+        padding: 8px;
+        cursor: pointer;
+    }
+    .pw-repairs { 
+        display:flex; 
+        flex-direction:column; 
+        gap:1.25rem; 
+        margin-bottom:1.5rem; 
+    }
+    .repair-card {
+        border: 4px solid var(--headerColor); /* Thicker border for neobrutalist */
+        box-shadow: 6px 6px 0 0 var(--headerColor); /* Larger, more prominent shadow */
+        padding: 1.5rem;
+        border-radius: 0; /* Ensure no radius */
+        display:flex;
+        flex-direction:column;
+        gap:1rem;
+        background-color: var(--backgroundColor);
+        color: var(--bodyTextColor);
+        position: relative;
+        transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .repair-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 0 var(--headerColor);
+    }
+    .repair-header { 
+        display:flex; 
+        justify-content:space-between; 
+        align-items:flex-start; 
+        color: var(--bodyTextColor);
+        gap: 1rem;
+    }
+    .repair-header > div:first-child {
+        flex: 1;
+    }
+    .repair-header strong { 
+        color: var(--headerColor);
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .repair-desc { 
+        color: var(--bodyTextColor);
+        font-size: 0.9375rem;
+        line-height: 1.5;
+        margin-top: 0.5rem;
+    }
+    .repair-prices { 
+        color: var(--bodyTextColor);
+        padding: 1rem;
+        border: 2px solid var(--headerColor);
+        background-color: var(--backgroundColor);
+        margin-top: 0.5rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .part-quality-card {
+        flex: 1;
+        min-width: 200px;
+        padding: 1rem;
+        border: 3px solid var(--headerColor);
+        background-color: var(--backgroundColor);
+        transition: transform 0.1s, box-shadow 0.1s;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .part-quality-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 var(--headerColor);
+    }
+    .part-quality-card.selected {
+        border-color: var(--primary);
+        box-shadow: 8px 8px 0 0 var(--primary);
+    }
+    .part-quality-card strong {
+        color: var(--headerColor);
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .part-quality-card p {
+        color: var(--bodyTextColor);
+        font-size: 0.9375rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+    .part-quality-card button {
+        margin-top: auto;
+        padding: 0.625rem 1rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        border: 3px solid var(--headerColor);
+        box-shadow: 3px 3px 0 0 var(--headerColor);
+        background-color: var(--primary);
+        color: var(--headerColor);
+        transition: transform 0.1s, box-shadow 0.1s;
+        cursor: pointer;
+        font-family: 'IBM Plex Mono', monospace;
+    }
+    .part-quality-card button:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 0 var(--headerColor);
+        background-color: var(--primary);
+        color: var(--headerColor);
+    }
+    .part-quality-card button:active {
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 0 var(--headerColor);
+    }
+    .repair-actions { 
+        display:flex; 
+        gap:0.75rem; 
+        align-items:center;
+        flex-shrink: 0;
+    }
+    .repair-card button {
+        padding: 0.625rem 1rem !important;
+        font-weight: 700 !important;
+        font-size: 0.875rem !important;
+        border: 3px solid var(--headerColor) !important;
+        box-shadow: 3px 3px 0 0 var(--headerColor) !important;
+        background-color: var(--primary) !important;
+        color: var(--headerColor) !important;
+        transition: transform 0.1s, box-shadow 0.1s !important;
+    }
+    .repair-card button:hover {
+        transform: translate(-1px, -1px) !important;
+        box-shadow: 4px 4px 0 0 var(--headerColor) !important;
+        background-color: var(--primary) !important;
+        color: var(--headerColor) !important;
+    }
+    .repair-card button:active {
+        transform: translate(1px, 1px) !important;
+        box-shadow: 2px 2px 0 0 var(--headerColor) !important;
+    }
+    .pw-actions { 
+        display:flex; 
+        gap:0.75rem; 
+        justify-content:flex-end; 
+        margin-top:1.5rem; 
+    }
+    #submission-status {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        color: var(--bodyTextColor);
+        font-size: 0.875rem;
+        min-height: 1.5rem;
+    }
+    button {
+        padding: 8px 12px;
+        border-radius: 0; /* Ensure no radius */
+        border: 2px solid var(--headerColor);
+        background: var(--backgroundColor);
+        color: var(--bodyTextColor);
+        cursor: pointer;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 700;
+        transition: none;
+    }
+    button:hover {
+        background: var(--headerColor);
+        color: var(--backgroundColor);
+    }
+    button:disabled {
+        background-color: var(--backgroundColor);
+        opacity: 0.5;
+        color: var(--bodyTextColor);
+        border-color: var(--headerColor);
+        cursor: not-allowed;
+    }
+    @media(min-width:760px){ 
+      .pw-controls { 
+        display:grid; 
+        grid-template-columns:repeat(2,1fr); 
+        gap:1rem; 
+      } 
+      .pw-repairs { 
+        gap:1.25rem; 
+      } 
+      
+      /* New layout for booking form */
+      #booking-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      #booking-form .pw-field {
+        margin-bottom: 0;
+      }
+      #booking-form .pw-field:has(textarea),
+      #booking-form .pw-field:has(input[type="file"]),
+      #booking-form .pw-actions {
+        grid-column: 1 / -1; /* Span both columns */
+      }
+      #booking-form .pw-field:has(textarea) {
+        margin-top: 0.25rem;
+      }
+      #booking-form .pw-field:has(input[type="file"]) {
+        margin-top: 0.25rem;
+      }
+    }
+
+    /* Dark mode overrides for wizard - now handled by CSS variables */
+</style>
+  <script>
+  /**
+   * Client-side logic for PricingWizard
+   * - Loads deviceCatalog.json from Supabase Storage (via API endpoint or direct Storage URL)
+   * - Falls back to local brand list if catalog fails to load
+   * - Loads local /data/repairs.json for repair options
+   * - No third-party browser calls to MobileAPI.dev or Icecat
+   */
+  (async function(){
+    const categoryEl = document.getElementById('category');
+    const brandEl = document.getElementById('brand');
+    const modelEl = document.getElementById('model');
+    const variantEl = document.getElementById('variant');
+    const toPhase2Btn = document.getElementById('to-phase-2');
+  
+    const pwStep1 = document.getElementById('pw-step-1');
+    const pwStep2 = document.getElementById('pw-step-2');
+    const pwStep3 = document.getElementById('pw-step-3');
+  
+    const repairsContainer = document.getElementById('repairs-list');
+    const toPhase3Btn = document.getElementById('to-phase-3');
+  
+    const state = { category:null, brand:null, model:null, variant:null, repairSelection:null };
+  
+    // Local brand fallback (used if deviceCatalog.json fails to load)
+    // Note: MobileAPI.dev provides phone/tablet/smartwatch data, but not laptops
+    // Laptop category will use this fallback even when catalog loads successfully
+    const localBrands = {
+      phone: ["Apple","Samsung","Google","OnePlus","Sony","LG"],
+      laptop: ["Apple","Dell","HP","Lenovo","Asus","Acer"], // Not available from MobileAPI.dev
+      tablet: ["Apple","Samsung","Amazon","Lenovo"],
+      smartwatch: ["Apple","Samsung","Google","Fitbit"] // Added to match new catalog structure
+    };
+  
+    // Device catalog data (loaded from Supabase)
+    let deviceCatalog = null;
+    let usingFallback = false;
+  
+    // Warning element for fallback mode
+    let fallbackWarning = null;
+  
+    // --- Load device catalog from Supabase ---
+    async function loadDeviceCatalog(){
+      if(deviceCatalog) return deviceCatalog;
+  
+      try {
+        // Try to load from API endpoint first (works for private buckets)
+        // If your bucket is public, you can use the direct Storage URL instead
+        const catalogUrl = '/api/device-catalog.json';
+        const res = await fetch(catalogUrl);
+        
+        if(!res.ok) throw new Error(`Failed to fetch catalog: ${res.statusText}`);
+        
+        deviceCatalog = await res.json();
+        usingFallback = false;
+        hideFallbackWarning();
+        return deviceCatalog;
+      } catch(err) {
+        console.warn('Failed to load device catalog, using fallback:', err);
+        usingFallback = true;
+        showFallbackWarning();
+        return null;
+      }
+    }
+  
+    // --- Show/hide fallback warning ---
+    function showFallbackWarning(){
+      if(fallbackWarning) return;
+      const categoryField = categoryEl.closest('.pw-field');
+      fallbackWarning = document.createElement('div');
+      fallbackWarning.className = 'fallback-warning';
+      fallbackWarning.style.cssText = 'padding: 0.5rem; margin-bottom: 1rem; border: 2px solid var(--headerColor); background-color: var(--backgroundColor); color: var(--bodyTextColor); font-size: 0.875rem;';
+      fallbackWarning.textContent = '⚠️ Using limited device catalog. Some devices may not be available.';
+      categoryField.parentNode.insertBefore(fallbackWarning, categoryField.nextSibling);
+    }
+  
+    function hideFallbackWarning(){
+      if(fallbackWarning) {
+        fallbackWarning.remove();
+        fallbackWarning = null;
+      }
+    }
+  
+    // --- Get brands from catalog ---
+    function getBrandsFromCatalog(category){
+      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+        return null;
+      }
+      const categoryData = deviceCatalog.categories[category];
+      return Object.keys(categoryData.brands || {});
+    }
+  
+    // --- Get models from catalog ---
+    function getModelsFromCatalog(category, brand){
+      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+        return null;
+      }
+      const categoryData = deviceCatalog.categories[category];
+      const brandData = categoryData.brands[brand];
+      if(!brandData) return null;
+      return Object.keys(brandData.models || {});
+    }
+  
+    // --- Get variants from catalog ---
+    function getVariantsFromCatalog(category, brand, model){
+      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+        return null;
+      }
+      const categoryData = deviceCatalog.categories[category];
+      const brandData = categoryData.brands[brand];
+      if(!brandData) return null;
+      const modelData = brandData.models[model];
+      if(!modelData) return null;
+      return modelData.variants || [];
+    }
+  
+    // --- Phase1 handlers ---
+    categoryEl.addEventListener('change', async e=>{
+      const cat = e.target.value;
+      state.category = cat;
+      resetSelect(brandEl, 'Loading brands...');
+      resetSelect(modelEl, 'Select brand first', true);
+      resetSelect(variantEl, 'Select model first', true);
+  
+      if(!cat){ disableBtn(toPhase2Btn); brandEl.disabled=true; return; }
+      brandEl.disabled=false;
+  
+      // Ensure catalog is loaded
+      await loadDeviceCatalog();
+  
+      // Get brands from catalog or fallback
+      let brands = null;
+      if(!usingFallback && deviceCatalog) {
+        brands = getBrandsFromCatalog(cat);
+      }
+      
+      // If no brands from catalog (or catalog failed), use fallback
+      // This also handles laptop category which isn't in MobileAPI.dev catalog
+      if(!brands || brands.length === 0) {
+        brands = localBrands[cat] || [];
+        // If using fallback for a category that should be in catalog, show warning
+        if(!usingFallback && deviceCatalog && (cat === 'phone' || cat === 'tablet' || cat === 'smartwatch')) {
+          console.warn(`No brands found in catalog for category: ${cat}, using fallback`);
+        }
+      }
+  
+      populateSelect(brandEl, brands);
+    });
+  
+    brandEl.addEventListener('change', async e=>{
+      const brand = e.target.value;
+      state.brand = brand;
+      resetSelect(modelEl, 'Loading models...');
+      resetSelect(variantEl, 'Select model first', true);
+      modelEl.disabled = false;
+  
+      // Ensure catalog is loaded
+      await loadDeviceCatalog();
+  
+      // Get models from catalog or use empty array
+      let models = null;
+      if(!usingFallback && deviceCatalog) {
+        models = getModelsFromCatalog(state.category, brand);
+      }
+      
+      if(!models || models.length === 0) {
+        models = [];
+      }
+  
+      populateSelect(modelEl, models);
+    });
+  
+    modelEl.addEventListener('change', e=>{
+      const model = e.target.value;
+      state.model = model;
+      resetSelect(variantEl, 'Loading variants...');
+      variantEl.disabled = false;
+  
+      // Get variants from catalog
+      let variants = null;
+      if(!usingFallback && deviceCatalog) {
+        variants = getVariantsFromCatalog(state.category, state.brand, model);
+      }
+      
+      if(!variants || variants.length === 0) {
+        variants = [];
+      }
+  
+      populateSelect(variantEl, variants);
+    });
+  
+    variantEl.addEventListener('change', e=>{
+      state.variant = e.target.value;
+      toPhase2Btn.disabled = !state.variant;
+    });
+  
+    function resetSelect(select, placeholder, disabled=false){ select.innerHTML = `<option value="">${placeholder}</option>`; select.disabled = !!disabled; }
+    function populateSelect(select, items){ select.innerHTML = `<option value="">Select</option>` + (items||[]).map(it=>`<option value="${escapeHtml(it)}">${escapeHtml(it)}</option>`).join(''); }
+    function disableBtn(btn){ btn.disabled = true; }
+    function enableBtn(btn){ btn.disabled = false; }
+  
+    toPhase2Btn.addEventListener('click', ()=>{
+      pwStep1.style.display='none'; pwStep2.style.display='block'; loadRepairs();
+    });
+  
+    document.getElementById('back-to-1').addEventListener('click', ()=>{ pwStep2.style.display='none'; pwStep1.style.display='block'; });
+    document.getElementById('back-to-2').addEventListener('click', ()=>{ pwStep3.style.display='none'; pwStep2.style.display='block'; });
+  
+    // --- Phase2: local repairs.json loader ---
+    let repairsData = null;
+    async function loadRepairs(){
+      if(repairsData) return renderRepairs();
+      try{
+        const res = await fetch('/data/repairs.json');
+        if(!res.ok) throw new Error('repairs.json not found');
+        repairsData = await res.json();
+        renderRepairs();
+      }catch(e){
+        repairsContainer.innerText = 'Failed to load repairs.';
+      }
+    }
+  
+    function renderRepairs(){
+      repairsContainer.innerHTML = '';
+      repairsData.repairs.forEach(r=>{
+        const card = document.createElement('div');
+        card.className = 'repair-card';
+        card.innerHTML = `
+          <div class="repair-header">
+            <div>
+              <strong>${escapeHtml(r.label)}</nobr></strong>
+              <div class="repair-desc">${escapeHtml(r.description)}</div>
+            </div>
+            <div class="repair-actions">
+              <button data-action="show-prices" data-id="${r.id}">Show prices</button>
+            </div>
+          </div>
+          <div class="repair-prices" id="prices-${r.id}" style="display:none;">
+            <div class="part-quality-card">
+              <strong>OEM Parts</strong>
+              <p>Price: $${r.prices.oem}</p>
+              <p>Original Equipment Manufacturer. Parts made by the same company that made your device, ensuring perfect compatibility and quality.</p>
+              <button data-action="select-repair" data-id="${r.id}" data-quality="oem">Select OEM</button>
+            </div>
+            <div class="part-quality-card">
+              <strong>Aftermarket Parts</strong>
+              <p>Price: $${r.prices.aftermarket}</p>
+              <p>High-quality parts from a third-party manufacturer. A cost-effective alternative to OEM parts.</p>
+              <button data-action="select-repair" data-id="${r.id}" data-quality="aftermarket">Select Aftermarket</button>
+            </div>
+          </div>
+        `;
+        repairsContainer.appendChild(card);
+      });
+  
+      repairsContainer.addEventListener('click', ev=>{
+        const btn = ev.target.closest('button'); if(!btn) return;
+        const action = btn.dataset.action; const id = btn.dataset.id;
+        if(action==='show-prices'){ const p = document.getElementById(`prices-${id}`); p.style.display = (p.style.display==='none')? 'block':'none'; }
+        else if(action==='select-repair'){
+          const chosen = btn.dataset.quality;
+          if(!chosen){ alert('Choose OEM or Aftermarket first.'); return; }
+          const repairObj = repairsData.repairs.find(x=>x.id===id);
+          state.repairSelection = { id, label: repairObj.label, chosen, price: repairObj.prices[chosen] };
+          toPhase3Btn.disabled = false;
+          document.querySelectorAll('.repair-card').forEach(c=> c.style.opacity=0.6);
+          btn.closest('.repair-card').style.opacity=1;
+          // Remove selected class from all part quality cards in this repair card
+          const repairCard = btn.closest('.repair-card');
+          repairCard.querySelectorAll('.part-quality-card').forEach(card=> card.classList.remove('selected'));
+          // Add selected class to the chosen part quality card
+          btn.closest('.part-quality-card').classList.add('selected');
+        }
+      });
+    }
+  
+    toPhase3Btn.addEventListener('click', ()=>{
+      if(!state.repairSelection){ alert('Select a repair first'); return; }
+      pwStep2.style.display='none'; pwStep3.style.display='block';
+    });
+  
+    // --- Phase3: submit to Supabase Function (example) ---
+    const bookingForm = document.getElementById('booking-form');
+    bookingForm.addEventListener('submit', async ev=>{
+      ev.preventDefault();
+      const fd = new FormData(bookingForm);
+      fd.append('category', state.category);
+      fd.append('brand', state.brand);
+      fd.append('model', state.model);
+      fd.append('variant', state.variant);
+      fd.append('repairId', state.repairSelection.id);
+      fd.append('repairChoice', state.repairSelection.chosen);
+      fd.append('repairPrice', state.repairSelection.price);
+  
+      document.getElementById('submission-status').innerText = 'Submitting...';
+      try{
+        const SUPABASE_FN_URL = 'https://<project>.supabase.co/functions/v1/submit-repair-quote';
+        const res = await fetch(SUPABASE_FN_URL, { method:'POST', body: fd });
+        if(!res.ok) throw new Error('Submission failed');
+        document.getElementById('submission-status').innerText = 'Submitted! We\'ll be in touch shortly.';
+        bookingForm.reset();
+      }catch(err){ console.error(err); document.getElementById('submission-status').innerText = 'Submission failed, try again later.'; }
+    });
+  
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  })();
+  </script>
+  
+
+--- src\lib\supabase\browserClient.ts
+
+/**
+ * Supabase Browser Client
+ * 
+ * This file initializes the Supabase client for browser-side use.
+ * It uses only the anon key (public key) and should never have access
+ * to service role keys.
+ * 
+ * Usage: Import this in client-side code when you need Supabase features
+ * in the browser (e.g., authentication, public data access).
+ */
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    'Supabase browser client not initialized. PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY must be set in .env'
+  );
+}
+
+export const supabaseBrowser = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
+
+
+
+--- src\lib\supabase\serverClient.ts
+
+/**
+ * Supabase Server Client
+ * 
+ * This file initializes the Supabase service client for server-side use.
+ * It uses the service role key which has full access and should NEVER
+ * be exposed to the browser.
+ * 
+ * Usage: Import this in Edge Functions and server-side Astro endpoints only.
+ */
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error(
+    'Missing Supabase environment variables. Please ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in your .env file.'
+  );
+}
+
+export const supabaseServer = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
+
+
+
+--- src\pages\index.astro
+
+---
+import Navbar from "../components/Navbar.astro";
+import HomeServicePage from "../components/HomeServicePage.astro";
+import Button from "../components/Button.astro";
+import Gallery from "../components/Gallery.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap" rel="stylesheet">
+		<link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+	</head>
+	
+	<body>
+		<Navbar/>
+		<main>
+			<section>
+				<HomeServicePage/>
+			</section>
+			<section class="center-button">
+				<Button/>
+			</section>
+			<section>
+				<Gallery/>
+			</section>
+		</main>
+		<script is:inline src="https://unpkg.com/aos@next/dist/aos.js"></script>
+		<script is:inline>
+			function initAOS() {
+				if (typeof AOS !== 'undefined') {
+					AOS.init({
+						duration: 800,
+						easing: 'ease-in-out',
+						once: true,
+						offset: 100
+					});
+				} else {
+					// Fallback: if AOS doesn't load, ensure elements are visible
+					setTimeout(function() {
+						document.querySelectorAll('[data-aos]').forEach(function(el) {
+							el.style.opacity = '1';
+							el.style.visibility = 'visible';
+						});
+					}, 100);
+				}
+			}
+			// Try multiple times to ensure AOS is loaded
+			function tryInitAOS() {
+				if (typeof AOS !== 'undefined') {
+					initAOS();
+				} else {
+					setTimeout(tryInitAOS, 50);
+				}
+			}
+			// Start trying when DOM is ready
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', tryInitAOS);
+			} else {
+				tryInitAOS();
+			}
+			// Fallback timeout to show elements if AOS never loads
+			setTimeout(function() {
+				document.querySelectorAll('[data-aos]').forEach(function(el) {
+					if (el.style.opacity === '0' || window.getComputedStyle(el).opacity === '0') {
+						el.style.opacity = '1';
+						el.style.visibility = 'visible';
+					}
+				});
+			}, 1000);
+		</script>
+	</body>
+</html>
+
+<style>
+
+:root {
+    /* Updated Neo-Brutalist Palette */
+    --primary: #ffa600; /* Vibrant Orange Accent */
+    --headerColor: #000000;
+    --bodyTextColor: #000000;
+    --bodyTextColorWhite: #000000; /* White is no longer a primary text color */
+    --backgroundColor: #eeeded;
+
+    --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+    --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+    --bodyFontSize: 1rem;
+    --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
+}
+
+body.dark-mode {
+    --headerColor: #FFFFFF;
+    --bodyTextColor: #FFFFFF;
+    --backgroundColor: #000000dc;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font */
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    border-radius: 0 !important; /* Force sharp corners everywhere */
+}
+
+h1, h2, h3, h4, h5, h6,
+.cs-title,
+.cs-h3,
+.cs-header {
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font for Headings */
+    font-weight: 700;
+}
+
+/* Hard, offset shadow effect for brutalist style */
+.hard-shadow {
+    box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
+}                           
+	/* Global spacing to offset fixed Navbar */
+	@media only screen and (max-width: 63.9375rem) {
+		body {
+			padding-top: 5rem; /* room for fixed nav on mobile */
+		}
+	}
+	@media only screen and (min-width: 64rem) {
+		body {
+			padding-top: 7rem; /* room for fixed nav on desktop */
+		}
+	}
+
+	/* Center the Button section */
+	.center-button {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 2rem 0;
+	}
+
+    /* Dark mode is now handled by CSS variables in components */
+
+/* ... rest of the CSS ... */
+</style>
+
+--- src\pages\services.astro
+
+---
+import Navbar from "../components/Navbar.astro";
+import ServicesPage from "../components/ServicesPage.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Services - Astro</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap" rel="stylesheet">
+		<link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+	</head>
+	
+	<body>
+		<Navbar/>
+		<main>
+			<!-- About page content will go here -->
+            <ServicesPage/>
+		</main>
+		<script is:inline src="https://unpkg.com/aos@next/dist/aos.js"></script>
+		<script is:inline>
+			function initAOS() {
+				if (typeof AOS !== 'undefined') {
+					AOS.init({
+						duration: 800,
+						easing: 'ease-in-out',
+						once: true,
+						offset: 100
+					});
+				} else {
+					// Fallback: if AOS doesn't load, ensure elements are visible
+					setTimeout(function() {
+						document.querySelectorAll('[data-aos]').forEach(function(el) {
+							el.style.opacity = '1';
+							el.style.visibility = 'visible';
+						});
+					}, 100);
+				}
+			}
+			// Try multiple times to ensure AOS is loaded
+			function tryInitAOS() {
+				if (typeof AOS !== 'undefined') {
+					initAOS();
+				} else {
+					setTimeout(tryInitAOS, 50);
+				}
+			}
+			// Start trying when DOM is ready
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', tryInitAOS);
+			} else {
+				tryInitAOS();
+			}
+			// Fallback timeout to show elements if AOS never loads
+			setTimeout(function() {
+				document.querySelectorAll('[data-aos]').forEach(function(el) {
+					if (el.style.opacity === '0' || window.getComputedStyle(el).opacity === '0') {
+						el.style.opacity = '1';
+						el.style.visibility = 'visible';
+					}
+				});
+			}, 1000);
+		</script>
+	</body>
+</html>
+
+<style>
+:root {
+    /* Updated Neo-Brutalist Palette */
+    --primary: #ffa600; /* Vibrant Orange Accent */
+    --headerColor: #000000;
+    --bodyTextColor: #000000;
+    --bodyTextColorWhite: #000000; /* White is no longer a primary text color */
+    --backgroundColor: #FFFFFF;
+
+    --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+    --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+    --bodyFontSize: 1rem;
+    --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
+}
+
+body.dark-mode {
+    --headerColor: #FFFFFF;
+    --bodyTextColor: #FFFFFF;
+    --backgroundColor: #000000;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font */
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    border-radius: 0 !important; /* Force sharp corners everywhere */
+}
+
+h1, h2, h3, h4, h5, h6,
+.cs-title,
+.cs-h3,
+.cs-header {
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font for Headings */
+    font-weight: 700;
+}
+
+/* Hard, offset shadow effect for brutalist style */
+.hard-shadow {
+    box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
+}
+/* Global spacing to offset fixed Navbar */
+@media only screen and (max-width: 63.9375rem) {
+	body {
+		padding-top: 5rem;
+	}
+}
+@media only screen and (min-width: 64rem) {
+	body {
+		padding-top: 7rem;
+	}
+}
+</style>
+
+--- src\pages\api\device-catalog.json.ts
+
+/**
+ * API Endpoint: /api/device-catalog.json
+ * 
+ * This endpoint serves the device catalog from Supabase Storage.
+ * Falls back to local file if Storage is not available.
+ * 
+ * Use this if your Storage bucket is private and you need to expose
+ * the catalog without revealing service keys.
+ * 
+ * If your bucket is public, you can access the file directly from Storage.
+ */
+
+import type { APIRoute } from 'astro';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { supabaseServer } from '../../lib/supabase/serverClient';
+
+export const GET: APIRoute = async ({ request }) => {
+  try {
+    // Try to fetch from Supabase Storage first
+    try {
+      const { data, error } = await supabaseServer.storage
+        .from('catalogs')
+        .download('deviceCatalog.json');
+
+      if (!error && data) {
+        // Successfully fetched from Storage
+        const text = await data.text();
+        const catalog = JSON.parse(text);
+        
+        return new Response(JSON.stringify(catalog), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+            'X-Catalog-Source': 'supabase-storage',
+          },
+        });
+      } else {
+        // Storage error - log it but continue to fallback
+        console.warn('Supabase Storage fetch failed, falling back to local file:', error?.message || 'Unknown error');
+        if (error) {
+          console.warn('Storage error details:', {
+            message: error.message,
+            statusCode: error.statusCode,
+            error: error.name,
+          });
+        }
+      }
+    } catch (storageError) {
+      // Storage fetch threw an exception - log and continue to fallback
+      console.warn('Supabase Storage exception, falling back to local file:', storageError);
+    }
+
+    // Fallback: Load from local file
+    try {
+      const localCatalogPath = join(process.cwd(), 'data', 'deviceCatalog.json');
+      const localCatalogContent = readFileSync(localCatalogPath, 'utf-8');
+      const catalog = JSON.parse(localCatalogContent);
+
+      console.log('Serving device catalog from local file (fallback mode)');
+      
+      return new Response(JSON.stringify(catalog), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=300', // Cache for 5 minutes (shorter for fallback)
+          'X-Catalog-Source': 'local-fallback',
+        },
+      });
+    } catch (localError) {
+      console.error('Failed to load local catalog file:', localError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to load device catalog',
+          message: 'Both Supabase Storage and local file failed. Please ensure the catalogs bucket exists in Supabase Storage or the local file is available.',
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+  } catch (error) {
+    console.error('Unexpected error in device catalog endpoint:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+};
+
+
+
+--- supabase\functions\fetchDeviceCatalog\index.ts
+
+/**
+ * Supabase Edge Function: fetchDeviceCatalog
+ * 
+ * This function fetches device catalog data from MobileAPI.dev and stores it
+ * in Supabase Storage as deviceCatalog.json.
+ * 
+ * Based on MobileAPI.dev API documentation: https://mobileapi.dev/docs/
+ * 
+ * API Structure:
+ * - Base URL: https://api.mobileapi.dev/
+ * - Authentication: Authorization: Token YOUR_API_KEY
+ * - Endpoints:
+ *   - GET /manufacturers/ - Get all manufacturers
+ *   - GET /devices/by-manufacturer/?manufacturer=... - Get devices by manufacturer
+ * 
+ * It should be scheduled to run bi-weekly or monthly via Supabase cron.
+ * 
+ * Environment variables required:
+ * - MOBILEAPI_KEY: Your MobileAPI.dev API key
+ * 
+ * Storage bucket required:
+ * - Bucket name: "catalogs"
+ * - File path: "deviceCatalog.json"
+ */
+
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// Base URL - According to MobileAPI.dev documentation
+// If the PDF specifies a different URL, update this constant
+const MOBILEAPI_BASE = 'https://api.mobileapi.dev';
+const RATE_LIMIT_DELAY = 1000; // 1 second delay between requests
+
+interface DeviceCatalog {
+  metadata: {
+    lastUpdated: string;
+    version: string;
+    source: string;
+  };
+  categories: {
+    [category: string]: {
+      brands: {
+        [brand: string]: {
+          models: {
+            [model: string]: {
+              variants: string[];
+            };
+          };
+        };
+      };
+    };
+  };
+}
+
+interface MobileAPIDevice {
+  id: number;
+  name: string;
+  brand?: {
+    name: string;
+  };
+  manufacturer_name?: string;
+  brand_name?: string;
+  storage?: string;
+  [key: string]: any;
+}
+
+interface MobileAPIManufacturer {
+  id: number;
+  name: string;
+  website_url?: string;
+}
+
+// Helper function to categorize device based on name/type
+function categorizeDevice(deviceName: string, deviceData?: any): string {
+  const name = deviceName.toLowerCase();
+  
+  // Check for tablet indicators
+  if (name.includes('tablet') || name.includes('ipad') || name.includes('tab')) {
+    return 'tablet';
+  }
+  
+  // Check for smartwatch indicators
+  if (name.includes('watch') || name.includes('band')) {
+    return 'smartwatch';
+  }
+  
+  // Default to phone (most devices are phones)
+  return 'phone';
+}
+
+// Helper function to extract model name (remove brand, storage, etc.)
+function extractModelName(deviceName: string, brandName: string): string {
+  let model = deviceName;
+  
+  // Remove brand name if present
+  if (model.toLowerCase().startsWith(brandName.toLowerCase())) {
+    model = model.substring(brandName.length).trim();
+  }
+  
+  // Remove common storage/color suffixes
+  model = model.replace(/\s*(128GB|256GB|512GB|1TB|64GB|32GB|16GB).*$/i, '');
+  model = model.replace(/\s*(Black|White|Blue|Red|Gold|Silver|Space Gray|Titanium).*$/i, '');
+  
+  return model.trim() || deviceName;
+}
+
+// Helper function to extract storage variants from device storage field
+function extractStorageVariants(storage?: string): string[] {
+  if (!storage) return [];
+  
+  // Storage format is typically "128GB, 256GB, 512GB" or similar
+  const variants = storage.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  return variants.length > 0 ? variants : [];
+}
+
+// Helper function to make API requests
+async function makeApiRequest(url: string, apiKey: string, useQueryParam: boolean = false): Promise<Response> {
+  // Build URL - remove key from query if we're using header auth
+  let requestUrl = url;
+  if (!useQueryParam) {
+    // Remove key from query string if present
+    requestUrl = url.replace(/[?&]key=[^&]*/, '').replace(/\?$/, '');
+    // Ensure URL ends properly
+    if (requestUrl.includes('?')) {
+      requestUrl = requestUrl.replace(/\?$/, '');
+    }
+  }
+
+  const headers: HeadersInit = {
+    'Authorization': `Token ${apiKey}`, // MobileAPI.dev uses "Token" not "Bearer"
+    'Content-Type': 'application/json',
+    'User-Agent': 'Supabase-Edge-Function/1.0',
+  };
+
+  console.log(`Making request to: ${requestUrl.replace(/key=[^&]+/, 'key=***')}`);
+  
+  try {
+    const response = await fetch(requestUrl, {
+      method: 'GET',
+      headers: headers,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
+    }
+    
+    return response;
+  } catch (error) {
+    // Handle TLS/SSL errors specifically
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase();
+      if (errorMsg.includes('unrecognisedname') || 
+          errorMsg.includes('certificate') ||
+          errorMsg.includes('tls') ||
+          errorMsg.includes('ssl') ||
+          errorMsg.includes('connect') ||
+          errorMsg.includes('handshake')) {
+        
+        // If we haven't tried query param yet, try that as fallback
+        if (!useQueryParam) {
+          console.warn('TLS error with header auth, trying query parameter method...');
+          try {
+            // Build URL with query parameter
+            const queryUrl = url.includes('?') 
+              ? `${url}&key=${encodeURIComponent(apiKey)}`
+              : `${url}?key=${encodeURIComponent(apiKey)}`;
+            return await makeApiRequest(queryUrl, apiKey, true);
+          } catch (retryError) {
+            // If retry also fails, throw original error with more context
+            console.error('Query parameter method also failed:', retryError);
+          }
+        }
+        
+        const safeUrl = requestUrl.replace(/key=[^&]+/, 'key=***');
+        throw new Error(
+          `TLS/SSL connection error to MobileAPI.dev.\n` +
+          `This is a known issue with some Deno runtimes and certain SSL certificates.\n\n` +
+          `Possible solutions:\n` +
+          `1. Verify the API is accessible: https://api.mobileapi.dev/manufacturers/\n` +
+          `2. Check MobileAPI.dev status page\n` +
+          `3. Try using query parameter auth instead of header (already attempted)\n` +
+          `4. Contact MobileAPI.dev support about SSL certificate configuration\n\n` +
+          `Original error: ${error.message}\n` +
+          `URL attempted: ${safeUrl}`
+        );
+      }
+    }
+    throw error;
+  }
+}
+
+serve(async (req: Request) => {
+  try {
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    let mobileApiKey = Deno.env.get('MOBILEAPI_KEY');
+
+    if (!mobileApiKey) {
+      throw new Error('MOBILEAPI_KEY environment variable is not set');
+    }
+
+    // Sanitize the API key - remove any whitespace and check for common mistakes
+    mobileApiKey = mobileApiKey.trim();
+    
+    // If the key contains "MOBILEAPI_KEY=" prefix (common mistake when copying from .env), remove it
+    if (mobileApiKey.startsWith('MOBILEAPI_KEY=')) {
+      mobileApiKey = mobileApiKey.substring('MOBILEAPI_KEY='.length).trim();
+      console.warn('Detected and removed "MOBILEAPI_KEY=" prefix from API key');
+    }
+    
+    // If the key contains "MOBILEAPI_KEY" anywhere else, it's likely malformed
+    if (mobileApiKey.includes('MOBILEAPI_KEY')) {
+      throw new Error(
+        'MOBILEAPI_KEY appears to contain the variable name. ' +
+        'Please set only the key value (without "MOBILEAPI_KEY=") in Supabase secrets. ' +
+        'The key should start with your actual API key, not the variable name.'
+      );
+    }
+
+    // Validate key format (should be a reasonable length and not contain spaces)
+    if (mobileApiKey.length < 10) {
+      throw new Error('MOBILEAPI_KEY appears to be too short. Please verify the key is correct.');
+    }
+
+    if (mobileApiKey.includes(' ')) {
+      // Trim any remaining spaces
+      mobileApiKey = mobileApiKey.replace(/\s+/g, '').trim();
+      console.warn('Removed spaces from API key');
+    }
+
+    // Log key info (first 8 chars only for security)
+    console.log(`API Key loaded: ${mobileApiKey.substring(0, 8)}... (length: ${mobileApiKey.length})`);
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    console.log('Starting device catalog fetch from MobileAPI.dev...');
+    
+    // Add structured logging for the start of the process
+    console.log(JSON.stringify({
+      event: 'fetchDeviceCatalog.started',
+      timestamp: new Date().toISOString(),
+    }));
+
+    // Step 1: Fetch all manufacturers
+    console.log('Fetching manufacturers list...');
+    // Use Authorization header (not query param) - MobileAPI.dev supports both but header is preferred
+    const manufacturersUrl = `${MOBILEAPI_BASE}/manufacturers/?limit=200`;
+    const manufacturersResponse = await makeApiRequest(manufacturersUrl, mobileApiKey, false);
+    const manufacturers: MobileAPIManufacturer[] = await manufacturersResponse.json();
+
+    if (!Array.isArray(manufacturers) || manufacturers.length === 0) {
+      const errorMsg = 'No manufacturers found or invalid response format';
+      console.error(JSON.stringify({
+        event: 'fetchDeviceCatalog.error',
+        error: errorMsg,
+        timestamp: new Date().toISOString(),
+      }));
+      throw new Error(errorMsg);
+    }
+    
+    // Log manufacturer count
+    console.log(JSON.stringify({
+      event: 'fetchDeviceCatalog.manufacturers.fetched',
+      count: manufacturers.length,
+      timestamp: new Date().toISOString(),
+    }));
+
+    console.log(`Found ${manufacturers.length} manufacturers`);
+
+    // Initialize catalog structure
+    const catalog: DeviceCatalog = {
+      metadata: {
+        lastUpdated: new Date().toISOString(),
+        version: '1.0.0',
+        source: 'MobileAPI.dev',
+      },
+      categories: {
+        phone: { brands: {} },
+        tablet: { brands: {} },
+        smartwatch: { brands: {} },
+      },
+    };
+
+    // Step 2: For each manufacturer, fetch devices
+    const maxManufacturers = 50; // Limit to avoid hitting rate limits (adjust based on your plan)
+    const manufacturersToProcess = manufacturers.slice(0, maxManufacturers);
+
+    for (let i = 0; i < manufacturersToProcess.length; i++) {
+      const manufacturer = manufacturersToProcess[i];
+      const manufacturerName = manufacturer.name;
+
+      console.log(`Processing manufacturer ${i + 1}/${manufacturersToProcess.length}: ${manufacturerName}`);
+      
+      // Add structured logging for manufacturer processing
+      console.log(JSON.stringify({
+        event: 'fetchDeviceCatalog.manufacturer.processing',
+        manufacturer: manufacturerName,
+        index: i + 1,
+        total: manufacturersToProcess.length,
+        timestamp: new Date().toISOString(),
+      }));
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_DELAY));
+
+        // Fetch devices for this manufacturer
+        const devicesUrl = `${MOBILEAPI_BASE}/devices/by-manufacturer/?manufacturer=${encodeURIComponent(manufacturerName)}&limit=100`;
+        const devicesResponse = await makeApiRequest(devicesUrl, mobileApiKey, false);
+        const devices: MobileAPIDevice[] = await devicesResponse.json();
+
+        if (!Array.isArray(devices) || devices.length === 0) {
+          console.warn(`No devices found for manufacturer: ${manufacturerName}`);
+          // Log warning with structured logging
+          console.warn(JSON.stringify({
+            event: 'fetchDeviceCatalog.manufacturer.noDevices',
+            manufacturer: manufacturerName,
+            timestamp: new Date().toISOString(),
+          }));
+          continue;
+        }
+
+        console.log(`  Found ${devices.length} devices for ${manufacturerName}`);
+        // Log device count with structured logging
+        console.log(JSON.stringify({
+          event: 'fetchDeviceCatalog.manufacturer.devices.fetched',
+          manufacturer: manufacturerName,
+          count: devices.length,
+          timestamp: new Date().toISOString(),
+        }));
+
+        // Process each device
+        for (const device of devices) {
+          const deviceName = device.name || device.brand_name || 'Unknown Device';
+          const brandName = device.brand?.name || device.manufacturer_name || device.brand_name || manufacturerName;
+          
+          // Categorize device
+          const category = categorizeDevice(deviceName, device);
+          
+          // Extract model name
+          const modelName = extractModelName(deviceName, brandName);
+          
+          // Extract storage variants
+          const storageVariants = extractStorageVariants(device.storage);
+          
+          // Initialize category if needed
+          if (!catalog.categories[category]) {
+            catalog.categories[category] = { brands: {} };
+          }
+          
+          // Initialize brand if needed
+          if (!catalog.categories[category].brands[brandName]) {
+            catalog.categories[category].brands[brandName] = { models: {} };
+          }
+          
+          // Add model and variants
+          if (!catalog.categories[category].brands[brandName].models[modelName]) {
+            catalog.categories[category].brands[brandName].models[modelName] = { variants: [] };
+          }
+          
+          // Add storage variants if available
+          if (storageVariants.length > 0) {
+            // Merge variants, avoiding duplicates
+            const existingVariants = catalog.categories[category].brands[brandName].models[modelName].variants;
+            for (const variant of storageVariants) {
+              if (!existingVariants.includes(variant)) {
+                existingVariants.push(variant);
+              }
+            }
+          } else {
+            // If no storage variants, use device name as variant
+            const variantName = `${modelName} ${device.storage || ''}`.trim();
+            if (variantName && !catalog.categories[category].brands[brandName].models[modelName].variants.includes(variantName)) {
+              catalog.categories[category].brands[brandName].models[modelName].variants.push(variantName);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch devices for manufacturer ${manufacturerName}:`, error instanceof Error ? error.message : error);
+        // Continue with next manufacturer
+        continue;
+      }
+    }
+
+    // Step 3: Upload to Supabase Storage
+    console.log('Uploading catalog to Supabase Storage...');
+    const catalogJson = JSON.stringify(catalog, null, 2);
+    
+    // Log catalog size for debugging
+    console.log(`Catalog size: ${catalogJson.length} characters`);
+    
+    // Add structured logging for catalog stats before upload
+    const stats = {
+      categories: Object.keys(catalog.categories).length,
+      totalBrands: 0,
+      totalModels: 0,
+      totalVariants: 0,
+    };
+
+    for (const category of Object.values(catalog.categories)) {
+      for (const brand of Object.values(category.brands)) {
+        stats.totalBrands++;
+        for (const model of Object.values(brand.models)) {
+          stats.totalModels++;
+          stats.totalVariants += model.variants.length;
+        }
+      }
+    }
+    
+    console.log(JSON.stringify({
+      event: 'fetchDeviceCatalog.catalog.stats',
+      stats: stats,
+      catalogSize: catalogJson.length,
+      timestamp: new Date().toISOString(),
+    }));
+    
+    // Convert string to Uint8Array for Supabase Storage compatibility
+    const encoder = new TextEncoder();
+    const catalogData = encoder.encode(catalogJson);
+    
+    // Add retry logic for upload
+    let uploadError = null;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount <= maxRetries) {
+      if (retryCount > 0) {
+        console.log(`Retrying upload (${retryCount}/${maxRetries})...`);
+        // Wait 1 second before retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      const { error } = await supabase.storage
+        .from('catalogs')
+        .upload('deviceCatalog.json', catalogData, {
+          contentType: 'application/json',
+          upsert: true, // Overwrite if exists
+        });
+      
+      if (!error) {
+        console.log('Catalog uploaded successfully');
+        uploadError = null;
+        break;
+      }
+      
+      uploadError = error;
+      console.warn(`Upload attempt ${retryCount + 1} failed:`, error.message);
+      retryCount++;
+    }
+    
+    if (uploadError) {
+      console.error('Failed to upload catalog after retries:', {
+        message: uploadError.message,
+        statusCode: uploadError.statusCode,
+        error: uploadError.name
+      });
+      
+      // Add structured error logging
+      console.error(JSON.stringify({
+        event: 'fetchDeviceCatalog.upload.failed',
+        error: uploadError.message,
+        statusCode: uploadError.statusCode,
+        timestamp: new Date().toISOString(),
+      }));
+      
+      throw new Error(`Failed to upload catalog to Storage after ${maxRetries} retries: ${uploadError.message}`);
+    }
+    
+    // Log successful upload
+    console.log(JSON.stringify({
+      event: 'fetchDeviceCatalog.upload.success',
+      timestamp: new Date().toISOString(),
+    }));
+
+    console.log('Catalog fetch completed successfully!');
+    console.log(`Stats: ${stats.categories} categories, ${stats.totalBrands} brands, ${stats.totalModels} models, ${stats.totalVariants} variants`);
+    
+    // Add structured logging for completion
+    console.log(JSON.stringify({
+      event: 'fetchDeviceCatalog.completed',
+      stats: stats,
+      timestamp: new Date().toISOString(),
+    }));
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Device catalog fetched and stored successfully',
+        lastUpdated: catalog.metadata.lastUpdated,
+        stats,
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    console.error('Error in fetchDeviceCatalog:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        details: error instanceof Error ? error.stack : undefined,
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+});
+
+
+--- supabase\functions\getDeviceCatalog\index.ts
+
+/**
+ * Supabase Edge Function: getDeviceCatalog
+ * 
+ * This function serves the device catalog from Supabase Storage.
+ * Use this if your Storage bucket is private and you need to expose
+ * the catalog without revealing service keys.
+ * 
+ * This is an alternative to the Astro API endpoint if you prefer
+ * to use Supabase Edge Functions for all API routes.
+ */
+
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req: Request) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    // Add structured logging for OPTIONS request
+    console.log(JSON.stringify({
+      event: 'getDeviceCatalog.options',
+      timestamp: new Date().toISOString(),
+    }));
+    return new Response('ok', { headers: corsHeaders });
+  }
+  
+  // Add structured logging for main request
+  console.log(JSON.stringify({
+    event: 'getDeviceCatalog.request',
+    method: req.method,
+    timestamp: new Date().toISOString(),
+  }));
+
+  try {
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch deviceCatalog.json from Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('catalogs')
+      .download('deviceCatalog.json');
+
+    if (error) {
+      console.error('Error fetching device catalog:', error);
+      // Add structured error logging
+      console.error(JSON.stringify({
+        event: 'getDeviceCatalog.storage.error',
+        error: error.message,
+        statusCode: error.statusCode,
+        timestamp: new Date().toISOString(),
+      }));
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch device catalog' }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+    
+    // Log successful download
+    console.log(JSON.stringify({
+      event: 'getDeviceCatalog.storage.success',
+      timestamp: new Date().toISOString(),
+    }));
+
+    // Convert blob to text
+    const text = await data.text();
+    
+    // Parse to validate JSON
+    const catalog = JSON.parse(text);
+    
+    // Log successful parsing
+    console.log(JSON.stringify({
+      event: 'getDeviceCatalog.parse.success',
+      timestamp: new Date().toISOString(),
+    }));
+
+    return new Response(JSON.stringify(catalog), {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+      },
+    });
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    // Add structured error logging
+    console.error(JSON.stringify({
+      event: 'getDeviceCatalog.unexpected.error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+    }));
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+});
+
+
+
+--- supabase\migrations\setup_cron_job.sql
+
+-- Migration: Setup Cron Job for fetchDeviceCatalog Edge Function
+-- 
+-- This SQL script sets up a cron job to automatically run the fetchDeviceCatalog
+-- Edge Function on a schedule.
+--
+-- Run this in your Supabase SQL Editor:
+-- 1. Go to Supabase Dashboard → SQL Editor
+-- 2. Paste this script
+-- 3. Click "Run" or press Ctrl+Enter
+--
+-- IMPORTANT: Replace YOUR_PROJECT_REF with your actual Supabase project reference ID
+
+-- Enable pg_cron extension (if not already enabled)
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+-- Schedule the fetchDeviceCatalog function to run bi-weekly (every 14 days at 2 AM UTC)
+-- 
+-- Cron syntax: minute hour day-of-month month day-of-week
+-- Schedule: "0 2 */14 * *" = Every 14 days at 2:00 AM UTC
+--
+-- Alternative schedules:
+-- - "0 2 1 * *" = First day of every month at 2:00 AM UTC
+-- - "0 2 * * 0" = Every Sunday at 2:00 AM UTC
+-- - "0 */6 * * *" = Every 6 hours
+-- - "0 2 * * *" = Every day at 2:00 AM UTC
+
+SELECT cron.schedule(
+  'fetch-device-catalog',                    -- Job name (unique identifier)
+  '0 2 */14 * *',                           -- Schedule: Every 14 days at 2 AM UTC
+  $$SELECT
+    net.http_post(
+      url := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/fetchDeviceCatalog',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
+      ),
+      body := '{}'::jsonb
+    ) AS request_id;
+  $$
+);
+
+-- Verify the cron job was created
+SELECT * FROM cron.job WHERE jobname = 'fetch-device-catalog';
+
+-- To view all cron jobs:
+-- SELECT * FROM cron.job;
+
+-- To unschedule/delete the cron job later:
+-- SELECT cron.unschedule('fetch-device-catalog');
+
+
+

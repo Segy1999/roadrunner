@@ -1,0 +1,2017 @@
+﻿--- astro.config.mjs
+
+// @ts-check
+import { defineConfig } from 'astro/config';
+
+// https://astro.build/config
+export default defineConfig({});
+
+
+--- README.md
+
+# Astro Starter Kit: Minimal
+
+```sh
+npm create astro@latest -- --template minimal
+```
+
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+
+## 🚀 Project Structure
+
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+/
+├── public/
+├── src/
+│   └── pages/
+│       └── index.astro
+└── package.json
+```
+
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+
+Any static assets, like images, can be placed in the `public/` directory.
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+
+--- tsconfig.json
+
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
+
+
+--- .astro\content-assets.mjs
+
+export default new Map();
+
+--- .astro\content-modules.mjs
+
+export default new Map();
+
+--- .astro\data-store.json
+
+[["Map",1,2],"meta::meta",["Map",3,4,5,6],"astro-version","5.15.3","astro-config-digest","{\"root\":{},\"srcDir\":{},\"publicDir\":{},\"outDir\":{},\"cacheDir\":{},\"compressHTML\":true,\"base\":\"/\",\"trailingSlash\":\"ignore\",\"output\":\"static\",\"scopedStyleStrategy\":\"attribute\",\"build\":{\"format\":\"directory\",\"client\":{},\"server\":{},\"assets\":\"_astro\",\"serverEntry\":\"entry.mjs\",\"redirects\":true,\"inlineStylesheets\":\"auto\",\"concurrency\":1},\"server\":{\"open\":false,\"host\":false,\"port\":4321,\"streaming\":true,\"allowedHosts\":[]},\"redirects\":{},\"image\":{\"endpoint\":{\"route\":\"/_image\"},\"service\":{\"entrypoint\":\"astro/assets/services/sharp\",\"config\":{}},\"domains\":[],\"remotePatterns\":[],\"responsiveStyles\":false},\"devToolbar\":{\"enabled\":true},\"markdown\":{\"syntaxHighlight\":{\"type\":\"shiki\",\"excludeLangs\":[\"math\"]},\"shikiConfig\":{\"langs\":[],\"langAlias\":{},\"theme\":\"github-dark\",\"themes\":{},\"wrap\":false,\"transformers\":[]},\"remarkPlugins\":[],\"rehypePlugins\":[],\"remarkRehype\":{},\"gfm\":true,\"smartypants\":true},\"security\":{\"checkOrigin\":true,\"allowedDomains\":[]},\"env\":{\"schema\":{},\"validateSecrets\":false},\"experimental\":{\"clientPrerender\":false,\"contentIntellisense\":false,\"headingIdCompat\":false,\"preserveScriptOrder\":false,\"liveContentCollections\":false,\"csp\":false,\"staticImportMetaEnv\":false,\"chromeDevtoolsWorkspace\":false,\"failOnPrerenderConflict\":false},\"legacy\":{\"collections\":false}}"]
+
+--- .astro\settings.json
+
+{
+	"_variables": {
+		"lastUpdateCheck": 1762205374650
+	}
+}
+
+--- .astro\types.d.ts
+
+/// <reference types="astro/client" />
+
+
+--- data\repairs.json
+
+{
+  "repairs": [
+    {
+      "id": "screen",
+      "label": "Screen Replacement",
+      "prices": {
+        "oem": 199,
+        "aftermarket": 119
+      },
+      "description": "Replace cracked/damaged display."
+    },
+    {
+      "id": "battery",
+      "label": "Battery Replacement",
+      "prices": {
+        "oem": 89,
+        "aftermarket": 49
+      },
+      "description": "Replace battery, test cycles."
+    },
+    {
+      "id": "charging",
+      "label": "Charging Port Repair",
+      "prices": {
+        "oem": 119,
+        "aftermarket": 79
+      },
+      "description": "Fix/replace charging port."
+    }
+  ],
+  "defaultPartQuality": "aftermarket" 
+}
+
+
+--- src\components\Button.astro
+
+<a href="/services.html" class="cs-button-6" aria-label="read more about us">
+    Book Your Repair Now
+    <!--SVG Arrow-->
+    <svg class="cs-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.92 11.62C17.8724 11.4973 17.801 11.3851 17.71 11.29L12.71 6.29C12.6168 6.19676 12.5061 6.1228 12.3842 6.07234C12.2624 6.02188 12.1319 5.99591 12 5.99591C11.7337 5.99591 11.4783 6.1017 11.29 6.29C11.1968 6.38324 11.1228 6.49393 11.0723 6.61575C11.0219 6.73758 10.9959 6.86814 10.9959 7C10.9959 7.2663 11.1017 7.5217 11.29 7.71L14.59 11H7C6.73478 11 6.48043 11.1054 6.29289 11.2929C6.10536 11.4804 6 11.7348 6 12C6 12.2652 6.10536 12.5196 6.29289 12.7071C6.48043 12.8946 6.73478 13 7 13H14.59L11.29 16.29C11.1963 16.383 11.1219 16.4936 11.0711 16.6154C11.0203 16.7373 10.9942 16.868 10.9942 17C10.9942 17.132 11.0203 17.2627 11.0711 17.3846C11.1219 17.5064 11.1963 17.617 11.29 17.71C11.383 17.8037 11.4936 17.8781 11.6154 17.9289C11.7373 17.9797 11.868 18.0058 12 18.0058C12.132 18.0058 12.2627 17.9797 12.3846 17.9289C12.5064 17.8781 12.617 17.8037 12.71 17.71L17.71 12.71C17.801 12.6149 17.8724 12.5028 17.92 12.38C18.02 12.1365 18.02 11.8635 17.92 11.62Z" fill="#1A1A1A"/>
+    </svg>
+</a>
+                    
+<style>
+    .cs-button-6 {
+        text-align: center;
+        font-size: 1rem;
+        line-height: 3.5rem;
+        text-decoration: none;
+        font-weight: 700;
+        min-width: 10.875rem;
+        margin: auto;
+        color: #1a1a1a;
+        padding: 0 1.5rem;
+        box-sizing: border-box;
+        background-color: transparent;
+        border: 2px solid #1a1a1a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 1;
+        transition: none; /* No animation */
+    }
+    .cs-button-6:hover {
+        background-color: #1a1a1a;
+        color: #fff;
+    }
+    .cs-button-6:before {
+        display: none; /* Remove animated element */
+    }
+    .cs-button-6 .cs-icon path {
+        transition: fill 0s; /* No animation */
+    }
+    .cs-button-6:hover .cs-icon path {
+        fill: #fff;
+    }
+    </style>
+
+--- src\components\Gallery.astro
+
+<!-- ============================================ -->
+<!--                   Gallery                    -->
+<!-- ============================================ -->
+
+<section id="gallery-1897">
+    <div class="cs-container">
+        <div class="cs-content">
+            <div class="cs-flex">
+                
+                <h2 class="cs-title">Witness The Difference and Our Results</h2>
+            </div>
+            <a class="cs-button-solid" href="">View All</a>
+        </div>
+        <!--Gallery-->
+        
+        <div class="cs-gallery">
+            <!--
+            <div class="cs-item">
+                <p class="cs-item-text">iPhone Screen Repair</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            <div class="cs-item">
+                <p class="cs-item-text">Phone Battery Replacement</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-before-1.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg">
+                        <source media="(min-width: 601px)" srcset="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg">
+                        <img loading="lazy" decoding="async" src="https://csimages2.nyc3.digitaloceanspaces.com/Images/MISC/derma-gallery-after-1.jpg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            -->
+            <div class="cs-item">
+                <p class="cs-item-text">Gaming Console Cleanup/Overheating Repair</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/dirty_p5.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/dirty_p5.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/dirty_p5.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/IMG_9492.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/IMG_9492.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/IMG_9492.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+            <div class="cs-item">
+                <p class="cs-item-text">Laptop Repair and Upgrade</p>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/lap_assembly.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/lap_assembly.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/lap_assembly.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">Before</span>
+                </div>
+                <div class="cs-picture-group">
+                    <picture class="cs-picture">
+                        <source media="(max-width: 600px)" srcset="/photos/lap_completed.jpeg">
+                        <source media="(min-width: 601px)" srcset="/photos/lap_completed.jpeg">
+                        <img loading="lazy" decoding="async" src="/photos/lap_completed.jpeg" alt="gallery" width="305" height="400">
+                    </picture>
+                    <span class="cs-tag">After</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img class="cs-graphic cs-graphic-top" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/derma-bg-1.svg" alt="graphic" width="517" height="469" loading="lazy" decoding="async" aria-hidden="true" >
+    <img class="cs-graphic cs-graphic-bottom" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/derma-bg-2.svg" alt="graphic" width="517" height="469" loading="lazy" decoding="async" aria-hidden="true" >
+</section>
+                                
+<style>
+    /*-- -------------------------- -->
+<---          Gallery           -->
+<--- -------------------------- -*/
+
+/* Mobile - 360px */
+@media only screen and (min-width: 0rem) {
+  #gallery-1897 {
+    padding: var(--sectionPadding);
+    background-color: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+  #gallery-1897 .cs-container {
+    width: 100%;
+    max-width: 80rem;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    /* 48px - 64px */
+    gap: clamp(3rem, 6vw, 4rem);
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #gallery-1897 .cs-content {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+  }
+  #gallery-1897 .cs-title {
+    font-family: 'Francois One', sans-serif;
+    max-width: 25ch;
+    margin: 0;
+  }
+  #gallery-1897 .cs-button-solid {
+    font-size: 1rem;
+    font-weight: 700;
+    /* 46px - 56px */
+    line-height: clamp(2.875em, 5.5vw, 3.5em);
+    text-align: center;
+    text-decoration: none;
+    min-width: 9.375rem;
+    margin: 0;
+    /* prevents padding from adding to the width */
+    box-sizing: border-box;
+    padding: 0 1.5rem;
+    background-color: var(--secondary);
+    overflow: hidden;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s;
+  }
+  #gallery-1897 .cs-button-solid:before {
+    content: "";
+    width: 0;
+    height: 100%;
+    background: #000;
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: width 0.3s;
+  }
+  #gallery-1897 .cs-button-solid:hover {
+    color: #fff;
+  }
+  #gallery-1897 .cs-button-solid:hover:before {
+    width: 100%;
+  }
+  #gallery-1897 .cs-gallery {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: row;
+    /* 16px - 20px */
+    gap: clamp(1rem, 2vw, 1.25rem);
+    z-index: 1;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #gallery-1897 .cs-item {
+    width: 100%;
+    padding: clamp(1rem, 4vw, 2rem);
+    background-color: #faf6f2;
+    border: 2px solid #000;
+    display: grid;
+    column-gap: clamp(0.5rem, 2vw, 1rem);
+    row-gap: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #gallery-1897 .cs-item-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2em;
+    margin: 0;
+    color: var(--headerColor);
+    grid-column: span 2;
+  }
+  #gallery-1897 .cs-picture-group {
+    height: clamp(10rem, 23vw, 20rem);
+    overflow: hidden;
+    grid-column: span 1;
+    position: relative;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    display: block;
+  }
+  #gallery-1897 .cs-picture {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+  #gallery-1897 .cs-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+  #gallery-1897 .cs-tag {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.5em;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary);
+    color: #000;
+    border: 1px solid #000;
+    position: absolute;
+    bottom: clamp(0.5rem, 2vw, 1rem);
+    left: clamp(0.5rem, 2vw, 1rem);
+  }
+  #gallery-1897 .cs-graphic {
+    display: none;
+  }
+  #gallery-1897 .cs-graphic-top {
+    top: 0;
+    right: -8.875rem;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    bottom: 0;
+    left: 0;
+  }
+}
+/* Tablet - 600px */
+@media only screen and (min-width: 37.5rem) {
+  #gallery-1897 .cs-content {
+    text-align: left;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  #gallery-1897 .cs-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  #gallery-1897 .cs-graphic-top {
+    right: -8.375rem;
+    transform: initial;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    left: -7.5rem;
+    transform: initial;
+  }
+}
+/* Desktop - 1600px */
+@media only screen and (min-width: 100rem) {
+  #gallery-1897 .cs-graphic-top {
+    margin-left: 15rem;
+    left: 50%;
+  }
+  #gallery-1897 .cs-graphic-bottom {
+    margin-right: 16.25rem;
+    right: 50%;
+    left: initial;
+  }
+}
+                                
+</style>
+
+--- src\components\HomeServicePage.astro
+
+<!-- ============================================ -->
+<!--                  Services                    -->
+<!-- ============================================ -->
+
+<section id="services-218">
+    <div class="cs-container">
+        <div class="cs-content">
+            
+            <h2 class="cs-title">Road Runner Repairs</h2>
+            <p class="cs-text">
+                With over 200+ customers served across the GTA, Road Runner Repairs is the go-to destination for all your tech repair needs.
+            </p>
+            <a href="/services.html" class="cs-button-solid">Get Free Quote</a>
+        </div>
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/phone-225-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Cracked Screen? Dead Battery? We’ll Bring Your Device Back to Life.</h3>
+                <p class="cs-item-text">
+                    Our certified technicians repair all major smartphone and tablet brands, including iPhone, Samsung, Google, and Huawei. Whether it’s a broken screen, a faulty charging port, or a software issue, we handle it with care and precision. We use only high-quality replacement parts to ensure your device performs like new and stays reliable long after the repair.
+                </p>
+            </li>
+            <li class="cs-item">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/desktop-232-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Laptop & Computer Services</h3>
+                <p class="cs-item-text">
+                    From startup failures to sluggish performance, our team provides complete diagnostic and repair services for laptops and computers. We work with both Windows and macOS devices, solving hardware and software issues efficiently to minimize your downtime. You can trust us to get your system running smoothly again so you can focus on what matters most.
+                </p>
+            </li>
+            <li class="cs-item">
+                <img class="cs-icon" loading="lazy" decoding="async" src="/photos/wifi-cover-1032-svgrepo-com.svg" alt="icon" width="77" height="77">
+                <h3 class="cs-h3">Device Protection & Accessories</h3>
+                <p class="cs-item-text">We offer a wide selection of protective cases, screen protectors, chargers, and other accessories designed to extend your device’s life. Our team can help you choose the right products to fit your needs and prevent future damage. It’s a simple way to save time, money, and frustration down the road.
+                </p>
+            </li>
+        </ul>
+        <!-- Floating Watermark -->
+        <img class="cs-watermark" aria-hidden="true" loading="lazy" decoding="async" src="/photos/RRR.png" alt="icon" width="77" height="77">
+    </div>
+</section>
+                                
+<style>
+    /*-- -------------------------- -->
+<---         Services           -->
+<--- -------------------------- -*/
+
+/* Mobile */
+@media only screen and (min-width: 0rem) {
+    #services-218 {
+        padding: var(--sectionPadding);
+    }
+    #services-218 .cs-container {
+        width: 100%;
+        /* changes to 1280px at tablet */
+        max-width: 34.375rem;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* 48px - 64px */
+        gap: clamp(3rem, 6vw, 4rem);
+    }
+    #services-218 .cs-content {
+        /* set text align to left if content needs to be left aligned */
+        text-align: left;
+        width: 100%;
+        max-width: 32.625rem;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        /* centers content horizontally, set to flex-start to left align */
+        align-items: flex-start;
+    }
+    #services-218 .cs-title {
+        font-family: 'Francois One', sans-serif;
+        font-size: 2rem;
+    }
+
+    #services-218 .cs-text {
+        margin-bottom: 1rem;
+    }
+    #services-218 .cs-text:last-of-type {
+        margin-bottom: 2rem;
+    }
+    #services-218 .cs-button-solid {
+        font-size: 1rem;
+        line-height: 3rem;
+        text-decoration: none;
+        font-weight: 700;
+        text-align: center;
+        margin: 0;
+        color: #000;
+        min-width: 9.375rem;
+        padding: 0 1.5rem;
+        background-color: var(--primary);
+        border: 2px solid #000;
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        box-sizing: border-box;
+        transition: none;
+    }
+    #services-218 .cs-button-solid:before {
+        display: none;
+    }
+    #services-218 .cs-button-solid:hover {
+        background-color: #000;
+        color: var(--primary);
+    }
+    #services-218 .cs-card-group {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    #services-218 .cs-item {
+        list-style: none;
+        width: 100%;
+        margin-right: 0.625rem;
+        padding: 2.75rem 2rem;
+        box-sizing: border-box;
+        background-color: #fafbfc;
+        border: 2px solid #000;
+        position: relative;
+    }
+    #services-218 .cs-item:before {
+        display: none;
+    }
+    #services-218 .cs-icon {
+        /* 60px - 77px */
+        width: clamp(3.75rem, 7.6vw, 4.8125rem);
+        height: auto;
+        margin-bottom: 2.5rem;
+        display: block;
+    }
+    #services-218 .cs-h3 {
+        font-family: 'Francois One', sans-serif;
+        /* 20px - 25px */
+        font-size: clamp(1.25rem, 1.5vw, 1.5625rem);
+        line-height: 1.2em;
+        margin: 0;
+        margin-bottom: 1rem;
+        color: var(--headerColor);
+        font-weight: bold;
+    }
+    #services-218 .cs-item-text {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 1rem;
+        line-height: 1.5em;
+        margin: 0;
+        color: var(--bodyTextColor);
+    }
+    #services-218 .cs-watermark {
+        display: none;
+    }
+}
+/* Tablet */
+@media only screen and (min-width: 48rem) {
+    #services-218 .cs-container {
+        max-width: 80rem;
+        position: relative;
+    }
+    #services-218 .cs-content {
+        width: 50%;
+    }
+    #services-218 .cs-card-group {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+    }
+    #services-218 .cs-item {
+        grid-column: span 4;
+        grid-row: span 1;
+        margin: 0;
+        /* makes each card the same height if you add or remove lines of text */
+        align-self: stretch;
+    }
+    #services-218 .cs-watermark {
+        width: 30%;
+        max-width: 14rem;
+        height: auto;
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: block;
+    }
+}
+
+                                
+</style>
+
+--- src\components\Navbar.astro
+
+---
+const currentPath = Astro.url.pathname;
+const isActive = (path: string) => currentPath === path;
+---
+
+<header id="cs-navigation">
+  <div class="cs-container">
+      <!--Nav Logo (Text)-->
+      <a href="/" class="cs-logo" aria-label="back to home">
+          <span class="cs-logo-text">R³</span>
+      </a>
+      <!--Navigation List-->
+      <nav class="cs-nav" role="navigation">
+          <ul id="cs-expanded" class="cs-ul">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class={ `cs-li-link ${isActive('/faq') ? 'cs-active' : ''}`}>
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </nav>
+      <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+      <div class="cs-ul-wrapper">
+          <ul class="cs-ul-mobile">
+              <li class="cs-li">
+                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
+                      Home
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/about" class={`cs-li-link ${isActive('/about') ? 'cs-active' : ''}`}>
+                      About
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
+                      Services
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class="cs-li-link">
+                      About Us
+                  </a>
+              </li>
+              <li class="cs-li">
+                  <a href="" class="cs-li-link">
+                      FAQ
+                  </a>
+              </li>
+          </ul>
+      </div>
+      <a href="" class="cs-button-solid cs-nav-button">Contact Us</a>
+      <!--Mobile/Medium Desktop Nav Toggle-->
+      <button class="cs-toggle" aria-label="mobile menu toggle" aria-expanded="false">
+          <div class="cs-box" aria-hidden="true">
+              <span class="cs-line cs-line1" aria-hidden="true"></span>
+              <span class="cs-line cs-line2" aria-hidden="true"></span>
+              <span class="cs-line cs-line3" aria-hidden="true"></span>
+          </div>
+      </button>
+      <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+      <!-- <button id="dark-mode-toggle" aria-label="dark mode toggle">
+          <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
+          <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
+      </button> -->
+  </div>
+</header>
+                                                              
+<style>
+  /*-- -------------------------- -->
+  <---     Mobile Navigation      -->
+  <--- -------------------------- -*/
+  @media only screen and (max-width: 63.9375rem) {
+    body.cs-open {
+      overflow: hidden;
+    }
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem;
+      background-color: #ffffff;
+      border-bottom: 2px solid #000; /* Hard border instead of shadow */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.125rem, 4vw, 1.375rem);
+      font-weight: 700;
+      color: var(--headerColor);
+      line-height: 1;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-nav {
+      display: none;
+    }
+    #cs-navigation .cs-button-solid {
+      display: none;
+    }
+    #cs-navigation .cs-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0;
+      background-color: transparent;
+      border: 2px solid #000;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-toggle:hover {
+      background-color: var(--primary);
+    }
+    #cs-navigation .cs-box {
+      width: 1.5rem;
+      height: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #cs-navigation .cs-line {
+      width: 100%;
+      height: 2px;
+      background-color: #000;
+      display: block;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: all 0.3s ease;
+    }
+    #cs-navigation .cs-line1 {
+      top: 0;
+    }
+    #cs-navigation .cs-line2 {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #cs-navigation .cs-line3 {
+      bottom: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line1 {
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line2 {
+      opacity: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line3 {
+      bottom: 50%;
+      transform: translate(-50%, 50%) rotate(-45deg);
+    }
+    #cs-navigation .cs-ul-wrapper {
+      width: 100%;
+      height: auto;
+      padding-bottom: 2.4em;
+      padding-top: 1rem;
+      background-color: #ffffff;
+      opacity: 0;
+      position: fixed;
+      top: 4.5rem; /* Position below navbar */
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s, opacity 0.3s;
+      border-bottom: 2px solid #000;
+    }
+    #cs-navigation.cs-active .cs-ul-wrapper {
+      max-height: 30em;
+      opacity: 1;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-ul-mobile {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      line-height: 1.2em;
+      text-decoration: none;
+      margin: 0;
+      color: var(--headerColor);
+      display: block;
+      position: relative;
+      padding: 1rem;
+      transition: none; /* Instant hover effect */
+      border-bottom: 1px solid #e0e0e0;
+    }
+    #cs-navigation .cs-li-link:last-child {
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover {
+      background-color: var(--primary);
+      color: #000;
+    }
+  }
+  /*-- -------------------------- -->
+  <---  Medium Desktop Navigation -->
+  <--- -------------------------- -*/
+  @media only screen and (min-width: 64rem) and (max-width: 80rem) {
+    body.cs-open {
+      overflow: hidden;
+    }
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem;
+      background-color: #fff;
+      border-bottom: 2px solid #000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      max-width: 80rem;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+      font-weight: 700;
+      color: var(--headerColor);
+      text-decoration: none;
+    }
+    #cs-navigation .cs-nav {
+      display: none;
+    }
+    #cs-navigation .cs-button-solid {
+      display: none;
+    }
+    #cs-navigation .cs-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0;
+      background-color: transparent;
+      border: 2px solid #000;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-toggle:hover {
+      background-color: var(--primary);
+    }
+    #cs-navigation .cs-box {
+      width: 1.5rem;
+      height: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #cs-navigation .cs-line {
+      width: 100%;
+      height: 2px;
+      background-color: #000;
+      display: block;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: all 0.3s ease;
+    }
+    #cs-navigation .cs-line1 {
+      top: 0;
+    }
+    #cs-navigation .cs-line2 {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #cs-navigation .cs-line3 {
+      bottom: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line1 {
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line2 {
+      opacity: 0;
+    }
+    #cs-navigation .cs-toggle.cs-active .cs-line3 {
+      bottom: 50%;
+      transform: translate(-50%, 50%) rotate(-45deg);
+    }
+    #cs-navigation .cs-ul-wrapper {
+      width: 100%;
+      height: auto;
+      padding-bottom: 2.4em;
+      padding-top: 1rem;
+      background-color: #fff;
+      opacity: 0;
+      position: fixed;
+      top: 4.5rem; /* Position below navbar */
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s, opacity 0.3s;
+      border-bottom: 2px solid #000;
+    }
+    #cs-navigation.cs-active .cs-ul-wrapper {
+      max-height: 30em;
+      opacity: 1;
+      z-index: 10001;
+    }
+    #cs-navigation .cs-ul-mobile {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(0.875rem, 1vw, 1rem);
+      line-height: 1.2em;
+      text-decoration: none;
+      margin: 0;
+      color: var(--headerColor);
+      display: block;
+      position: relative;
+      padding: 1rem;
+      transition: none;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    #cs-navigation .cs-li-link:last-child {
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover {
+      background-color: var(--primary);
+      color: #000;
+    }
+  }
+  /*-- -------------------------- -->
+  <---     Desktop Navigation     -->
+  <--- -------------------------- -*/
+  @media only screen and (min-width: 80.0625rem) {
+    #cs-navigation {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 1rem;
+      background-color: #fff;
+      border-bottom: 2px solid #000; /* Hard border */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+    }
+    #cs-navigation .cs-container {
+      width: 100%;
+      max-width: 80rem;
+      margin: auto;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    #cs-navigation .cs-toggle {
+      display: none;
+    }
+    #cs-navigation .cs-nav {
+      display: block;
+    }
+    #cs-navigation .cs-ul-wrapper {
+      display: none;
+    }
+    #cs-navigation .cs-logo {
+      margin: 0 auto 0 0;
+      text-decoration: none;
+    }
+    #cs-navigation .cs-logo .cs-logo-text {
+      font-family: 'Sixtyfour', monospace;
+      font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+      font-weight: 700;
+      color: var(--headerColor);
+      text-decoration: none;
+    }
+    #cs-navigation .cs-ul {
+      display: flex;
+      align-items: center;
+      gap: clamp(1.25rem, 2.6vw, 2.25rem);
+      flex-direction: row;
+    }
+    #cs-navigation .cs-li {
+      list-style: none;
+      padding: 1.25rem 0.5rem;
+      flex: none;
+    }
+    #cs-navigation .cs-li-link {
+      font-size: clamp(0.875rem, 1vw, 1rem);
+      text-decoration: none;
+      color: var(--bodyTextColor);
+      display: block;
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: none; /* Instant hover */
+      border-bottom: none;
+    }
+    #cs-navigation .cs-li-link:hover,
+    #cs-navigation .cs-li-link.cs-active {
+      background-color: var(--primary);
+      color: #000;
+    }
+    #cs-navigation .cs-li-link:before {
+      display: none; /* Remove underline effect */
+    }
+    #cs-navigation .cs-button-solid {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 2.75em; /* Adjusted height */
+      text-align: center;
+      text-decoration: none;
+      min-width: 9.375rem;
+      padding: 0 1.5rem;
+      color: #000;
+      background-color: transparent;
+      border: 2px solid #000;
+      transition: none; /* Instant hover */
+      display: inline-block;
+    }
+    #cs-navigation .cs-button-solid:hover {
+      background-color: #000;
+      color: #fff;
+    }
+  }
+  </style>
+<script>
+  // add classes for mobile navigation toggling
+var CSbody = document.querySelector('body');
+const CSnavbarMenu = document.querySelector('#cs-navigation');
+const CShamburgerMenu = document.querySelector('#cs-navigation .cs-toggle');
+
+if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+	CShamburgerMenu.addEventListener('click', function () {
+		if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+			CShamburgerMenu.classList.toggle('cs-active');
+			CSnavbarMenu.classList.toggle('cs-active');
+			CSbody.classList.toggle('cs-open');
+			// run the function to check the aria-expanded value
+			ariaExpanded();
+		}
+	});
+}
+
+// checks the value of aria expanded on the cs-toggle button and changes it accordingly whether it is expanded or not
+function ariaExpanded() {
+	const csToggle = document.querySelector('#cs-navigation .cs-toggle');
+	if (csToggle) {
+		const csExpanded = csToggle.getAttribute('aria-expanded');
+
+		if (csExpanded === 'false') {
+			csToggle.setAttribute('aria-expanded', 'true');
+		} else {
+			csToggle.setAttribute('aria-expanded', 'false');
+		}
+	}
+}
+
+// mobile nav toggle code
+const dropDowns = Array.from(document.querySelectorAll('#cs-navigation .cs-dropdown'));
+for (const item of dropDowns) {
+	const onClick = () => {
+		item.classList.toggle('cs-active');
+	};
+	item.addEventListener('click', onClick);
+}
+                                
+</script>
+
+--- src\components\ServicesPage.astro
+
+
+<section id="pricing-wizard-001">
+    <div class="pw-step" id="pw-step-1">
+      <h2 class="pw-title">1. Choose your product</h2>
+      <div class="pw-controls">
+        <div class="pw-field">
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="">Select</option>
+            <option value="phone">Phone</option>
+            <option value="laptop">Laptop</option>
+            <option value="tablet">Tablet</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="brand">Brand</label>
+          <select id="brand" disabled>
+            <option value="">Select category first</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="model">Model</label>
+          <select id="model" disabled>
+            <option value="">Select brand first</option>
+          </select>
+        </div>
+  
+        <div class="pw-field">
+          <label for="variant">Variant</label>
+          <select id="variant" disabled>
+            <option value="">Select model first</option>
+          </select>
+        </div>
+  
+        <button id="to-phase-2" disabled>Continue</button>
+      </div>
+    </div>
+  
+    <div class="pw-step" id="pw-step-2" style="display:none;">
+      <h2 class="pw-title">2. Pick a repair & parts</h2>
+      <div id="repairs-list" class="pw-repairs"></div>
+      <div class="pw-actions">
+        <button id="back-to-1">Back</button>
+        <button id="to-phase-3" disabled>Next: Booking</button>
+      </div>
+    </div>
+  
+    <div class="pw-step" id="pw-step-3" style="display:none;">
+      <h2 class="pw-title">3. Booking details</h2>
+      <form id="booking-form">
+        <div class="pw-field"><label>Name<input name="name" required></label></div>
+        <div class="pw-field"><label>Email<input name="email" type="email" required></label></div>
+        <div class="pw-field"><label>Phone<input name="phone" required></label></div>
+        <div class="pw-field"><label>Issue description<textarea name="desc"></textarea></label></div>
+        <div class="pw-field"><label>Photos<input type="file" id="photos" name="photos" accept="image/*" multiple></label></div>
+  
+        <div class="pw-actions">
+          <button type="button" id="back-to-2">Back</button>
+          <button type="submit" id="submit-booking">Submit Booking</button>
+        </div>
+      </form>
+      <div id="submission-status" aria-live="polite"></div>
+    </div>
+  </section>
+  
+  <style>
+    #pricing-wizard-001 { font-family: 'IBM Plex Mono', monospace; padding: 14px; max-width:720px; margin:0 auto; }
+    .pw-title { font-size:1.125rem; margin-bottom:8px; }
+    .pw-field { margin-bottom:12px; display:flex; flex-direction:column; gap:6px; }
+    .pw-field label { font-size:.875rem; }
+    .pw-field input, .pw-field select, .pw-field textarea {
+        padding: 10px;
+        border: 2px solid #000;
+        border-radius: 0; /* Ensure no radius */
+        font-size: 1rem;
+        font-family: 'IBM Plex Mono', monospace;
+        background-color: #fff;
+    }
+    .pw-repairs { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+    .repair-card {
+        border: 2px solid #000;
+        padding: 10px;
+        border-radius: 0; /* Ensure no radius */
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+    }
+    .repair-header { display:flex; justify-content:space-between; align-items:center; }
+    .repair-actions { display:flex; gap:8px; align-items:center; }
+    .pw-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+    button {
+        padding: 8px 12px;
+        border-radius: 0; /* Ensure no radius */
+        border: 2px solid #000;
+        background: #fff;
+        cursor: pointer;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 700;
+        transition: none;
+    }
+    button:hover {
+        background: #000;
+        color: #fff;
+    }
+    button:disabled {
+        background-color: #eee;
+        color: #999;
+        border-color: #999;
+        cursor: not-allowed;
+    }
+    @media(min-width:760px){ .pw-controls { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; } .pw-repairs { gap:12px; } }
+    </style>
+  
+  <script>
+  /**
+   * Client-side logic for PricingWizard.astro
+   * - Integrates Open Icecat example fetch (placeholder variables)
+   * - Falls back to local brand list if Icecat fetch fails
+   * - Loads local /data/repairs.json for repair options
+   *
+   * IMPORTANT: Replace ICECAT_API_BASE and ICECAT_API_KEY with your credentials.
+   * Check Open Icecat / Icecat Retailer API docs for exact endpoints and auth.
+   * See documentation references included in the project notes.
+   */
+  (async function(){
+    const ICECAT_API_BASE = '';// e.g. 'https://api.icecat.biz' or your retailer endpoint
+    const ICECAT_API_KEY = ''; // your Icecat API key (if required)
+  
+    const categoryEl = document.getElementById('category');
+    const brandEl = document.getElementById('brand');
+    const modelEl = document.getElementById('model');
+    const variantEl = document.getElementById('variant');
+    const toPhase2Btn = document.getElementById('to-phase-2');
+  
+    const pwStep1 = document.getElementById('pw-step-1');
+    const pwStep2 = document.getElementById('pw-step-2');
+    const pwStep3 = document.getElementById('pw-step-3');
+  
+    const repairsContainer = document.getElementById('repairs-list');
+    const toPhase3Btn = document.getElementById('to-phase-3');
+  
+    const state = { category:null, brand:null, model:null, variant:null, repairSelection:null };
+  
+    // Local brand fallback (hardcoded as requested)
+    const localBrands = {
+      phone: ["Apple","Samsung","Google","OnePlus","Sony","LG"],
+      laptop: ["Apple","Dell","HP","Lenovo","Asus","Acer"],
+      tablet: ["Apple","Samsung","Amazon","Lenovo"]
+    };
+  
+    // --- Helper: fetch brands from Icecat (example) ---
+    async function fetchBrandsFromIcecat(category){
+      if(!ICECAT_API_BASE || !ICECAT_API_KEY) throw new Error('No Icecat credentials configured');
+  
+      // NOTE: The exact Icecat endpoint and query parameters depend on the product plan (Open Icecat vs Retailer API).
+      // This example uses a placeholder path. Confirm the correct endpoints in Icecat docs and replace below.
+      const endpoint = `${ICECAT_API_BASE}/retailer/brands?category=${encodeURIComponent(category)}`;
+      const res = await fetch(endpoint, { headers: { 'Authorization': `Bearer ${ICECAT_API_KEY}` } });
+      if(!res.ok) throw new Error('Icecat brands fetch failed');
+      const data = await res.json();
+  
+      // Map response to array of brand names — adapt to the Icecat response shape
+      // Example mapping (adjust if Icecat returns {brands:[{name:...}]})
+      if(Array.isArray(data.brands)) return data.brands.map(b=>b.name || b.BrandName || b);
+      if(Array.isArray(data)) return data.map(b=>b.name || b);
+      return [];
+    }
+  
+    // --- example: fetch models for brand from Icecat (placeholder) ---
+    async function fetchModelsFromIcecat(category, brand){
+      if(!ICECAT_API_BASE || !ICECAT_API_KEY) throw new Error('No Icecat credentials configured');
+      const endpoint = `${ICECAT_API_BASE}/retailer/models?category=${encodeURIComponent(category)}&brand=${encodeURIComponent(brand)}`;
+      const res = await fetch(endpoint, { headers: { 'Authorization': `Bearer ${ICECAT_API_KEY}` } });
+      if(!res.ok) throw new Error('Icecat models fetch failed');
+      const data = await res.json();
+      // adapt mapping
+      if(Array.isArray(data.models)) return data.models.map(m=>m.name || m.Title || m);
+      if(Array.isArray(data)) return data.map(m=>m.name || m);
+      return [];
+    }
+  
+    // --- Phase1 handlers ---
+    categoryEl.addEventListener('change', async e=>{
+      const cat = e.target.value;
+      state.category = cat;
+      resetSelect(brandEl, 'Loading brands...');
+      resetSelect(modelEl, 'Select brand first', true);
+      resetSelect(variantEl, 'Select model first', true);
+  
+      if(!cat){ disableBtn(toPhase2Btn); brandEl.disabled=true; return; }
+      brandEl.disabled=false;
+  
+      // Try Icecat, fall back to local
+      try{
+        const brands = await fetchBrandsFromIcecat(cat);
+        if(brands && brands.length) populateSelect(brandEl, brands);
+        else throw new Error('No brands from icecat');
+      }catch(err){
+        // fallback
+        populateSelect(brandEl, localBrands[cat] || []);
+      }
+    });
+  
+    brandEl.addEventListener('change', async e=>{
+      const brand = e.target.value;
+      state.brand = brand;
+      resetSelect(modelEl, 'Loading models...');
+      resetSelect(variantEl, 'Select model first', true);
+      modelEl.disabled = false;
+  
+      // Try Icecat models first, otherwise use mock
+      try{
+        const models = await fetchModelsFromIcecat(state.category, brand);
+        if(models && models.length) populateSelect(modelEl, models);
+        else throw new Error('no models from icecat');
+      }catch(err){
+        populateSelect(modelEl, mockModelsFor(brand));
+      }
+    });
+  
+    modelEl.addEventListener('change', e=>{
+      const model = e.target.value;
+      state.model = model;
+      resetSelect(variantEl, 'Loading variants...');
+      variantEl.disabled = false;
+      populateSelect(variantEl, mockVariantsFor(model));
+    });
+  
+    variantEl.addEventListener('change', e=>{
+      state.variant = e.target.value;
+      toPhase2Btn.disabled = !state.variant;
+    });
+  
+    function resetSelect(select, placeholder, disabled=false){ select.innerHTML = `<option value="">${placeholder}</option>`; select.disabled = !!disabled; }
+    function populateSelect(select, items){ select.innerHTML = `<option value="">Select</option>` + (items||[]).map(it=>`<option value="${escapeHtml(it)}">${escapeHtml(it)}</option>`).join(''); }
+    function disableBtn(btn){ btn.disabled = true; }
+    function enableBtn(btn){ btn.disabled = false; }
+  
+    function mockModelsFor(brand){ return [brand+" Model A", brand+" Model B", brand+" Model C"]; }
+    function mockVariantsFor(model){ return [model+" 64GB", model+" 128GB", model+" 256GB"]; }
+  
+    toPhase2Btn.addEventListener('click', ()=>{
+      pwStep1.style.display='none'; pwStep2.style.display='block'; loadRepairs();
+    });
+  
+    document.getElementById('back-to-1').addEventListener('click', ()=>{ pwStep2.style.display='none'; pwStep1.style.display='block'; });
+    document.getElementById('back-to-2').addEventListener('click', ()=>{ pwStep3.style.display='none'; pwStep2.style.display='block'; });
+  
+    // --- Phase2: local repairs.json loader ---
+    let repairsData = null;
+    async function loadRepairs(){
+      if(repairsData) return renderRepairs();
+      try{
+        const res = await fetch('/data/repairs.json');
+        if(!res.ok) throw new Error('repairs.json not found');
+        repairsData = await res.json();
+        renderRepairs();
+      }catch(e){
+        repairsContainer.innerText = 'Failed to load repairs.';
+      }
+    }
+  
+    function renderRepairs(){
+      repairsContainer.innerHTML = '';
+      repairsData.repairs.forEach(r=>{
+        const card = document.createElement('div');
+        card.className = 'repair-card';
+        card.innerHTML = `
+          <div class="repair-header">
+            <div>
+              <strong>${escapeHtml(r.label)}</nobr></strong>
+              <div class="repair-desc">${escapeHtml(r.description)}</div>
+            </div>
+            <div class="repair-actions">
+              <button data-action="show-prices" data-id="${r.id}">Show prices</button>
+            </div>
+          </div>
+          <div class="repair-prices" id="prices-${r.id}" style="display:none; margin-top:8px;">
+            <div>OEM: $${r.prices.oem}</div>
+            <div>Aftermarket: $${r.prices.aftermarket}</div>
+            <div style="margin-top:8px;">
+              <label><input type="radio" name="choice-${r.id}" value="oem"> Choose OEM</label>
+              <label style="margin-left:8px;"><input type="radio" name="choice-${r.id}" value="aftermarket"> Choose Aftermarket</label>
+              <button data-action="select-repair" data-id="${r.id}" style="margin-left:8px;">Select</button>
+            </div>
+          </div>
+        `;
+        repairsContainer.appendChild(card);
+      });
+  
+      repairsContainer.addEventListener('click', ev=>{
+        const btn = ev.target.closest('button'); if(!btn) return;
+        const action = btn.dataset.action; const id = btn.dataset.id;
+        if(action==='show-prices'){ const p = document.getElementById(`prices-${id}`); p.style.display = (p.style.display==='none')? 'block':'none'; }
+        else if(action==='select-repair'){
+          const radios = document.getElementsByName(`choice-${id}`);
+          let chosen = null; radios.forEach(r=>{ if(r.checked) chosen = r.value; });
+          if(!chosen){ alert('Choose OEM or Aftermarket first.'); return; }
+          const repairObj = repairsData.repairs.find(x=>x.id===id);
+          state.repairSelection = { id, label: repairObj.label, chosen, price: repairObj.prices[chosen] };
+          toPhase3Btn.disabled = false;
+          document.querySelectorAll('.repair-card').forEach(c=> c.style.opacity=0.6);
+          btn.closest('.repair-card').style.opacity=1;
+        }
+      });
+    }
+  
+    toPhase3Btn.addEventListener('click', ()=>{
+      if(!state.repairSelection){ alert('Select a repair first'); return; }
+      pwStep2.style.display='none'; pwStep3.style.display='block';
+    });
+  
+    // --- Phase3: submit to Supabase Function (example) ---
+    const bookingForm = document.getElementById('booking-form');
+    bookingForm.addEventListener('submit', async ev=>{
+      ev.preventDefault();
+      const fd = new FormData(bookingForm);
+      fd.append('category', state.category);
+      fd.append('brand', state.brand);
+      fd.append('model', state.model);
+      fd.append('variant', state.variant);
+      fd.append('repairId', state.repairSelection.id);
+      fd.append('repairChoice', state.repairSelection.chosen);
+      fd.append('repairPrice', state.repairSelection.price);
+  
+      document.getElementById('submission-status').innerText = 'Submitting...';
+      try{
+        const SUPABASE_FN_URL = 'https://<project>.supabase.co/functions/v1/submit-repair-quote';
+        const res = await fetch(SUPABASE_FN_URL, { method:'POST', body: fd });
+        if(!res.ok) throw new Error('Submission failed');
+        document.getElementById('submission-status').innerText = 'Submitted! We\'ll be in touch shortly.';
+        bookingForm.reset();
+      }catch(err){ console.error(err); document.getElementById('submission-status').innerText = 'Submission failed, try again later.'; }
+    });
+  
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  })();
+  </script>
+  
+
+--- src\pages\index.astro
+
+---
+import Navbar from "../components/Navbar.astro";
+import HomeServicePage from "../components/HomeServicePage.astro";
+import Button from "../components/Button.astro";
+import Gallery from "../components/Gallery.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap" rel="stylesheet">
+	</head>
+	
+	<body>
+		<Navbar/>
+		<main>
+			<section>
+				<HomeServicePage/>
+			</section>
+			<section class="center-button">
+				<Button/>
+			</section>
+			<section>
+				<Gallery/>
+			</section>
+		</main>
+	</body>
+</html>
+
+<style>
+
+:root {
+    /* Updated Neo-Brutalist Palette */
+    --primary: #ffa600; /* Vibrant Orange Accent */
+    --headerColor: #000000;
+    --bodyTextColor: #000000;
+    --bodyTextColorWhite: #000000; /* White is no longer a primary text color */
+    --backgroundColor: #FFFFFF;
+
+    --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+    --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+    --bodyFontSize: 1rem;
+    --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font */
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    border-radius: 0 !important; /* Force sharp corners everywhere */
+}
+
+h1, h2, h3, h4, h5, h6,
+.cs-title,
+.cs-h3,
+.cs-header {
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font for Headings */
+    font-weight: 700;
+}
+
+/* Hard, offset shadow effect for brutalist style */
+.hard-shadow {
+    box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
+}                           
+	/* Global spacing to offset fixed Navbar */
+	@media only screen and (max-width: 63.9375rem) {
+		body {
+			padding-top: 5rem; /* room for fixed nav on mobile */
+		}
+	}
+	@media only screen and (min-width: 64rem) {
+		body {
+			padding-top: 7rem; /* room for fixed nav on desktop */
+		}
+	}
+
+	/* Center the Button section */
+	.center-button {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 2rem 0;
+	}
+
+	/*-- -------------------------- -->
+	<---          Contact           -->
+	<--- -------------------------- -*/
+
+/* Mobile - 360px */
+@media only screen and (min-width: 0rem) {
+  #contact-2320 {
+    padding: var(--sectionPadding);
+    display: flex;
+    flex-direction: column;
+    /* 48px - 64px */
+    gap: clamp(3rem, 6vw, 4rem);
+    position: relative;
+    z-index: 1;
+  }
+  #contact-2320 .cs-container {
+    width: 100%;
+    /* changes to 1280px at desktop */
+    max-width: 36.25rem;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* 48px - 64px */
+    gap: clamp(3rem, 6vw, 4rem);
+  }
+  #contact-2320 .cs-container2 {
+    width: 100%;
+    /* changes to 1280px at desktop */
+    max-width: 36.25rem;
+    padding: 5rem 3rem;
+    margin: auto;
+    position: relative;
+    z-index: 1;
+  }
+  #contact-2320 .cs-container2 .cs-topper {
+    color: #fff;
+  }
+  #contact-2320 .cs-content {
+    text-align: left;
+  }
+  #contact-2320 .cs-title {
+    margin-bottom: 2rem;
+  }
+  #contact-2320 .cs-form {
+    border-radius: 1rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  #contact-2320 .cs-label {
+    /* 14px - 16px */
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    width: 100%;
+    color: var(--headerColor);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  #contact-2320 .cs-input {
+    font-size: 1rem;
+    width: 100%;
+    height: 3.5rem;
+    padding: 0;
+    padding-left: 1.5rem;
+    color: var(--headerColor);
+    background-color: #f7f7f7;
+    border: none;
+    /* prevents padding from adding to height and width */
+    box-sizing: border-box;
+  }
+  #contact-2320 .cs-input::placeholder {
+    color: #7d799c;
+    opacity: 0.6;
+  }
+  #contact-2320 .cs-textarea {
+    min-height: 7.5rem;
+    padding-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-family: inherit;
+  }
+  #contact-2320 .cs-button-solid {
+    font-size: 1rem;
+    /* 46px - 56px */
+    line-height: clamp(2.875rem, 5.5vw, 3.5rem);
+    text-decoration: none;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    color: #fff;
+    padding: 0 1.5rem;
+    background-color: var(--primary);
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    /* prevents padding from adding to the width */
+    box-sizing: border-box;
+  }
+  #contact-2320 .cs-button-solid:before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 0%;
+    background: #000;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 0.25rem;
+    transition: width 0.3s;
+  }
+  #contact-2320 .cs-button-solid:hover:before {
+    width: 100%;
+  }
+  #contact-2320 .cs-submit {
+    text-transform: uppercase;
+    background-color: var(--secondaryLight);
+    color: var(--headerColor);
+    border: none;
+    transition: color 0.3s;
+  }
+  #contact-2320 .cs-submit:hover {
+    cursor: pointer;
+    color: #fff;
+  }
+  #contact-2320 .cs-map {
+    width: 100%;
+    max-width: 39.375rem;
+    height: 25rem;
+    position: relative;
+    z-index: 1;
+    display: block;
+  }
+  #contact-2320 .cs-iframe-wrapper {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* 40px - 56px */
+    bottom: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  #contact-2320 .cs-iframe-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+  #contact-2320 .cs-box {
+    width: 90%;
+    max-width: 28.125rem;
+    /* 16px - 32px top & bottom */
+    /* 16px left & right */
+    padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 2.4vw, 1rem);
+    background-color: #fff;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+  }
+  #contact-2320 .cs-box:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    pointer-events: none;
+    opacity: 0.1;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  #contact-2320 .cs-icon {
+    width: 2rem;
+    height: auto;
+    display: block;
+  }
+  #contact-2320 .cs-flex {
+    display: flex;
+    flex-direction: column;
+  }
+  #contact-2320 .cs-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2em;
+    margin: 0 0 0.5rem;
+    color: var(--headerColor);
+  }
+  #contact-2320 .cs-address {
+    font-size: clamp(0.75rem, 2.8vw, 1rem);
+    line-height: 1.5em;
+    margin: 0;
+    color: var(--bodyTextColor);
+  }
+  #contact-2320 .cs-hours {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #contact-2320 .cs-hours-info {
+    /* 20px - 25px */
+    font-size: clamp(1.25rem, 3vw, 1.5625rem);
+    line-height: 1.2em;
+    font-weight: 700;
+    width: 60%;
+    max-width: 28ch;
+    margin: 0;
+    color: var(--bodyTextColorWhite);
+  }
+  #contact-2320 .cs-background {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  #contact-2320 .cs-background:before {
+    /* background color overlay */
+    content: '';
+    position: absolute;
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: #000;
+    opacity: 0.72;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  #contact-2320 .cs-background img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    /* Makes img tag act as a background image */
+    object-fit: cover;
+  }
+}
+/* Small Desktop - 1024px */
+@media only screen and (min-width: 64rem) {
+  #contact-2320 .cs-container {
+    max-width: 80rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 3.25rem;
+  }
+  #contact-2320 .cs-container2 {
+    max-width: 80rem;
+  }
+  #contact-2320 .cs-content {
+    max-width: 32.625rem;
+    /* 24px - 80px */
+    padding: clamp(2rem, 5vw, 5rem) 0;
+  }
+  #contact-2320 .cs-title,
+  #contact-2320 .cs-topper,
+  #contact-2320 .cs-text {
+    text-align: left;
+    margin-left: 0;
+  }
+  #contact-2320 .cs-title {
+    max-width: 32.625rem;
+  }
+  #contact-2320 .cs-services,
+  #contact-2320 .cs-phone {
+    width: 47%;
+  }
+  #contact-2320 .cs-button-solid {
+    margin-left: 0;
+  }
+  #contact-2320 .cs-map {
+    max-width: 39.375rem;
+    height: auto;
+    order: -1;
+  }
+}
+                                
+</style>
+
+--- src\pages\services.astro
+
+---
+import Navbar from "../components/Navbar.astro";
+import ServicesPage from "../components/ServicesPage.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Services - Astro</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap" rel="stylesheet">
+	</head>
+	
+	<body>
+		<Navbar/>
+		<main>
+			<!-- About page content will go here -->
+            <ServicesPage/>
+		</main>
+	</body>
+</html>
+
+<style>
+:root {
+    /* Updated Neo-Brutalist Palette */
+    --primary: #ffa600; /* Vibrant Orange Accent */
+    --headerColor: #000000;
+    --bodyTextColor: #000000;
+    --bodyTextColorWhite: #000000; /* White is no longer a primary text color */
+    --backgroundColor: #FFFFFF;
+
+    --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+    --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+    --bodyFontSize: 1rem;
+    --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font */
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    border-radius: 0 !important; /* Force sharp corners everywhere */
+}
+
+h1, h2, h3, h4, h5, h6,
+.cs-title,
+.cs-h3,
+.cs-header {
+    font-family: 'IBM Plex Mono', monospace; /* New Global Font for Headings */
+    font-weight: 700;
+}
+
+/* Hard, offset shadow effect for brutalist style */
+.hard-shadow {
+    box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
+}
+/* Global spacing to offset fixed Navbar */
+@media only screen and (max-width: 63.9375rem) {
+	body {
+		padding-top: 5rem;
+	}
+}
+@media only screen and (min-width: 64rem) {
+	body {
+		padding-top: 7rem;
+	}
+}
+</style>
+
+
+
