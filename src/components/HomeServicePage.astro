@@ -161,13 +161,15 @@
         margin: 0;
         color: var(--bodyTextColor);
     }
-    #services-218 .cs-watermark {
-       
+    #services-218 .cs-watermark {        
         width: clamp(16rem, 18vw, 20.5rem);
         height: auto;
         margin-bottom: 1.5rem;
         display: block;
-    }    
+    }
+    body.dark-mode #services-218 .cs-watermark {
+        filter: brightness(0) invert(1);
+    }
 }
 /* Tablet */
 @media only screen and (min-width: 48rem) {
