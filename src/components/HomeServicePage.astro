@@ -5,8 +5,7 @@
 <section id="services-218">
     <div class="cs-container">
         <div class="cs-content">
-            
-            <h2 class="cs-title">Road Runner Repairs</h2>
+            <img class="cs-watermark" aria-hidden="false" loading="lazy" decoding="async" src="/photos/logo.png" alt="Road Runner Repairs" width="154" height="154">
             <p class="cs-text">
                 With over 200+ customers served across the GTA, Road Runner Repairs is the go-to destination for all your tech repair needs.
             </p>
@@ -34,8 +33,6 @@
                 </p>
             </li>
         </ul>
-        <!-- Floating Watermark -->
-        <img class="cs-watermark" aria-hidden="true" loading="lazy" decoding="async" src="/photos/RRR.png" alt="icon" width="77" height="77">
     </div>
 </section>
                                 
@@ -165,8 +162,12 @@
         color: var(--bodyTextColor);
     }
     #services-218 .cs-watermark {
-        display: none;
-    }
+       
+        width: clamp(16rem, 18vw, 20.5rem);
+        height: auto;
+        margin-bottom: 1.5rem;
+        display: block;
+    }    
 }
 /* Tablet */
 @media only screen and (min-width: 48rem) {
@@ -187,16 +188,7 @@
         margin: 0;
         /* makes each card the same height if you add or remove lines of text */
         align-self: stretch;
-    }
-    #services-218 .cs-watermark {
-        width: 30%;
-        max-width: 14rem;
-        height: auto;
-        position: absolute;
-        top: 0;
-        right: 0;
-        display: block;
-    }
+    }    
 }
 
                                 
