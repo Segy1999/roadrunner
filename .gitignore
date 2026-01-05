@@ -25,6 +25,6 @@ pnpm-debug.log*
 .ps1
 .txt
 
-export-codebase/ps1
+export-codebase.ps1
 
 data.md

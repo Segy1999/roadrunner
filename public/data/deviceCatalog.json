@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "lastUpdated": "2024-01-01T00:00:00Z",
+    "version": "1.0.0",
+    "source": "MobileAPI.dev"
+  },
+  "categories": {
+    "phone": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPhone Air": {},
+            "iPhone 17 Pro Max": {},
+            "iPhone 17 Pro": {},
+            "iPhone 17": {},
+            "iPhone 16 Pro Max": {},
+            "iPhone 16 Pro": {},
+            "iPhone 16 Plus": {},
+            "iPhone 16": {},
+            "iPhone 16e": {},
+            "iPhone 15 Pro Max": {},
+            "iPhone 15 Pro": {},
+            "iPhone 15 Plus": {},
+            "iPhone 15": {},
+            "iPhone 14 Pro Max": {},
+            "iPhone 14 Pro": {},
+            "iPhone 14 Plus": {},
+            "iPhone 14": {},
+            "iPhone 13 Pro Max": {},
+            "iPhone 13 Pro": {},
+            "iPhone 13": {},
+            "iPhone 13 mini": {},
+            "iPhone 12 Pro Max": {},
+            "iPhone 12 Pro": {},
+            "iPhone 12": {},
+            "iPhone 12 mini": {},
+            "iPhone 11 Pro": {},
+            "iPhone 11": {},
+            "iPhone XR": {},
+            "iPhone SE (3rd generation)": {},
+            "iPhone SE (2nd generation)": {}
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy S24": {},
+            "Galaxy S23": {}
+          }
+        }
+      }
+    },
+    "tablet": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "iPad Pro": {
+              "variants": [
+                "11\"",
+                "12.9\""
+              ]
+            },
+            "iPad Air": {
+              "variants": [
+                "64GB",
+                "256GB"
+              ]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Tab S9": {
+              "variants": [
+                "128GB",
+                "256GB",
+                "512GB"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "smartwatch": {
+      "brands": {
+        "Apple": {
+          "models": {
+            "Apple Watch Series 9": {
+              "variants": [
+                "41mm",
+                "45mm"
+              ]
+            }
+          }
+        },
+        "Samsung": {
+          "models": {
+            "Galaxy Watch 6": {
+              "variants": [
+                "40mm",
+                "44mm"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
