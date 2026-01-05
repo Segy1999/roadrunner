@@ -5,72 +5,100 @@ const isActive = (path: string) => currentPath === path;
 
 <header id="cs-navigation">
   <div class="cs-container">
-      <!--Nav Logo (Text)-->
-      <a href="/" class="cs-logo" aria-label="back to home">
-          <span class="cs-logo-text">R³</span>
-      </a>
-      <!--Navigation List-->
-      <nav class="cs-nav" role="navigation">
-          <ul id="cs-expanded" class="cs-ul">
-              <li class="cs-li">
-                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
-                      Home
-                  </a>
-              </li>
-              <li class="cs-li">
-                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
-                      Services
-                  </a>
-              </li>
-              <li class="cs-li">
-                  <a href="" class={ `cs-li-link ${isActive('/faq') ? 'cs-active' : ''}`}>
-                      FAQ
-                  </a>
-              </li>
-          </ul>
-      </nav>
-      <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
-      <div class="cs-ul-wrapper">
-          <ul class="cs-ul-mobile">
-              <li class="cs-li">
-                  <a href="/" class={`cs-li-link ${isActive('/') ? 'cs-active' : ''}`}>
-                      Home
-                  </a>
-              </li>
-              <li class="cs-li">
-                  <a href="/services" class={`cs-li-link ${isActive('/services') ? 'cs-active' : ''}`}>
-                      Services
-                  </a>
-              </li>
-              <li class="cs-li">
-                  <a href="" class="cs-li-link">
-                      FAQ
-                  </a>
-              </li>
-          </ul>
+    <!--Nav Logo (Image for mobile only)-->
+    <a href="/" class="cs-logo" aria-label="back to home">
+      <img src="/favicon.png" alt="Road Runner Repairs" class="cs-logo-img" />
+    </a>
+    <!--Navigation List-->
+    <nav class="cs-nav" role="navigation">
+      <ul id="cs-expanded" class="cs-ul">
+        <li class="cs-li">
+          <a href="/" class={`cs-li-link ${isActive("/") ? "cs-active" : ""}`}>
+            Home
+          </a>
+        </li>
+        <li class="cs-li">
+          <a
+            href="/services"
+            class={`cs-li-link ${isActive("/services") ? "cs-active" : ""}`}
+          >
+            Services
+          </a>
+        </li>
+        <li class="cs-li">
+          <a
+            href=""
+            class={`cs-li-link ${isActive("/faq") ? "cs-active" : ""}`}
+          >
+            FAQ
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+    <div class="cs-ul-wrapper">
+      <ul class="cs-ul-mobile">
+        <li class="cs-li">
+          <a href="/" class={`cs-li-link ${isActive("/") ? "cs-active" : ""}`}>
+            Home
+          </a>
+        </li>
+        <li class="cs-li">
+          <a
+            href="/services"
+            class={`cs-li-link ${isActive("/services") ? "cs-active" : ""}`}
+          >
+            Services
+          </a>
+        </li>
+        <li class="cs-li">
+          <a href="" class="cs-li-link"> FAQ </a>
+        </li>
+      </ul>
+    </div>
+    <a href="" class="cs-button-solid cs-nav-button">Contact Us</a>
+    <!--Mobile/Medium Desktop Nav Toggle-->
+    <button
+      class="cs-toggle"
+      aria-label="mobile menu toggle"
+      aria-expanded="false"
+    >
+      <div class="cs-box" aria-hidden="true">
+        <span class="cs-line cs-line1" aria-hidden="true"></span>
+        <span class="cs-line cs-line2" aria-hidden="true"></span>
+        <span class="cs-line cs-line3" aria-hidden="true"></span>
       </div>
-      <a href="" class="cs-button-solid cs-nav-button">Contact Us</a>
-      <!--Mobile/Medium Desktop Nav Toggle-->
-      <button class="cs-toggle" aria-label="mobile menu toggle" aria-expanded="false">
-          <div class="cs-box" aria-hidden="true">
-              <span class="cs-line cs-line1" aria-hidden="true"></span>
-              <span class="cs-line cs-line2" aria-hidden="true"></span>
-              <span class="cs-line cs-line3" aria-hidden="true"></span>
-          </div>
-      </button>
-      <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
-       <button id="dark-mode-toggle" aria-label="dark mode toggle">
-          <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
-          <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
-      </button> 
+    </button>
+    <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+    <button id="dark-mode-toggle" aria-label="dark mode toggle">
+      <svg
+        class="cs-moon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 480 480"
+        style="enable-background:new 0 0 480 480"
+        xml:space="preserve"
+        ><path
+          d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"
+        ></path></svg
+      >
+      <img
+        class="cs-sun"
+        aria-hidden="true"
+        src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg"
+        decoding="async"
+        alt="moon"
+        width="15"
+        height="15"
+      />
+    </button>
   </div>
 </header>
-                                                              
+
 <style>
   /*-- -------------------------- -->
   <---     Mobile Navigation      -->
   <--- -------------------------- -*/
-  
+
   /* START OF DARK MODE TOGGLE STYLES */
   #dark-mode-toggle {
     display: inline-flex;
@@ -96,11 +124,11 @@ const isActive = (path: string) => currentPath === path;
     width: 1.25rem;
     height: auto;
   }
-  
+
   body.dark-mode #dark-mode-toggle {
-      border-color: #000;
+    border-color: #000;
   }
-  
+
   body.dark-mode #dark-mode-toggle .cs-moon {
     display: none;
   }
@@ -136,15 +164,13 @@ const isActive = (path: string) => currentPath === path;
     #cs-navigation .cs-logo {
       margin: 0;
       text-decoration: none;
+      display: flex;
+      align-items: center;
     }
-    #cs-navigation .cs-logo .cs-logo-text {
-      font-family: 'Sixtyfour', monospace;
-      font-size: clamp(1.125rem, 4vw, 1.375rem);
-      font-weight: 700;
-      color: #fff; /* Contrast text */
-      line-height: 1;
-      white-space: nowrap;
-      text-decoration: none;
+    #cs-navigation .cs-logo-img {
+      height: clamp(2rem, 8vw, 2.5rem);
+      width: auto;
+      display: block;
     }
     #cs-navigation .cs-nav {
       display: none;
@@ -222,7 +248,9 @@ const isActive = (path: string) => currentPath === path;
       z-index: 9999;
       overflow: hidden;
       max-height: 0;
-      transition: max-height 0.4s, opacity 0.3s;
+      transition:
+        max-height 0.4s,
+        opacity 0.3s;
       border-bottom: 2px solid #fff; /* Contrast border */
     }
     #cs-navigation.cs-active .cs-ul-wrapper {
@@ -264,25 +292,24 @@ const isActive = (path: string) => currentPath === path;
 
     /* Dark Mode Mobile */
     body.dark-mode #cs-navigation {
-        background-color: #8f8f8fab;
-        border-bottom: 2px solid #000;
+      background-color: #8f8f8fab;
+      border-bottom: 2px solid #000;
     }
-    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
     body.dark-mode #cs-navigation .cs-li-link {
-        color: #000;
+      color: #000;
     }
     body.dark-mode #cs-navigation .cs-toggle {
-        border-color: #000;
+      border-color: #000;
     }
     body.dark-mode #cs-navigation .cs-line {
-        background-color: #000;
+      background-color: #000;
     }
     body.dark-mode #cs-navigation .cs-ul-wrapper {
-        background-color: #fff;
-        border-bottom: 2px solid #000;
+      background-color: #fff;
+      border-bottom: 2px solid #000;
     }
   }
-  
+
   /*-- -------------------------- -->
   <---     Desktop Navigation     -->
   <--- -------------------------- -*/
@@ -304,7 +331,7 @@ const isActive = (path: string) => currentPath === path;
       max-width: 80rem;
       margin: auto;
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
       gap: 1.5rem;
     }
@@ -317,16 +344,9 @@ const isActive = (path: string) => currentPath === path;
     #cs-navigation .cs-ul-wrapper {
       display: none;
     }
+    /* Hide logo on desktop */
     #cs-navigation .cs-logo {
-      margin: 0 auto 0 0;
-      text-decoration: none;
-    }
-    #cs-navigation .cs-logo .cs-logo-text {
-      font-family: 'Sixtyfour', monospace;
-      font-size: clamp(1.25rem, 1.8vw, 1.75rem);
-      font-weight: 700;
-      color: #fff; /* Contrast text */
-      text-decoration: none;
+      display: none !important;
     }
     #cs-navigation .cs-ul {
       display: flex;
@@ -378,88 +398,88 @@ const isActive = (path: string) => currentPath === path;
 
     /* Dark Mode Desktop */
     body.dark-mode #cs-navigation {
-        background-color: #8f8f8fab;
-        border-bottom: 2px solid #000;
+      background-color: #8f8f8fab;
+      border-bottom: 2px solid #000;
     }
-    body.dark-mode #cs-navigation .cs-logo .cs-logo-text,
     body.dark-mode #cs-navigation .cs-li-link {
-        color: #000;
+      color: #000;
     }
     body.dark-mode #cs-navigation .cs-button-solid {
-        color: #000;
-        border-color: #000;
+      color: #000;
+      border-color: #000;
     }
     body.dark-mode #cs-navigation .cs-button-solid:hover {
-        background-color: #000;
-        color: #fff;
+      background-color: #000;
+      color: #fff;
     }
   }
-  </style>
-  
+</style>
+
 <script>
   // add classes for mobile navigation toggling
-var CSbody = document.querySelector('body');
-const CSnavbarMenu = document.querySelector('#cs-navigation');
-const CShamburgerMenu = document.querySelector('#cs-navigation .cs-toggle');
+  var CSbody = document.querySelector("body");
+  const CSnavbarMenu = document.querySelector("#cs-navigation");
+  const CShamburgerMenu = document.querySelector("#cs-navigation .cs-toggle");
 
-if (CShamburgerMenu && CSnavbarMenu && CSbody) {
-	CShamburgerMenu.addEventListener('click', function () {
-		if (CShamburgerMenu && CSnavbarMenu && CSbody) {
-			CShamburgerMenu.classList.toggle('cs-active');
-			CSnavbarMenu.classList.toggle('cs-active');
-			CSbody.classList.toggle('cs-open');
-			// run the function to check the aria-expanded value
-			ariaExpanded();
-		}
-	});
-}
+  if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+    CShamburgerMenu.addEventListener("click", function () {
+      if (CShamburgerMenu && CSnavbarMenu && CSbody) {
+        CShamburgerMenu.classList.toggle("cs-active");
+        CSnavbarMenu.classList.toggle("cs-active");
+        CSbody.classList.toggle("cs-open");
+        // run the function to check the aria-expanded value
+        ariaExpanded();
+      }
+    });
+  }
 
-// checks the value of aria expanded on the cs-toggle button and changes it accordingly whether it is expanded or not
-function ariaExpanded() {
-	const csToggle = document.querySelector('#cs-navigation .cs-toggle');
-	if (csToggle) {
-		const csExpanded = csToggle.getAttribute('aria-expanded');
+  // checks the value of aria expanded on the cs-toggle button and changes it accordingly whether it is expanded or not
+  function ariaExpanded() {
+    const csToggle = document.querySelector("#cs-navigation .cs-toggle");
+    if (csToggle) {
+      const csExpanded = csToggle.getAttribute("aria-expanded");
 
-		if (csExpanded === 'false') {
-			csToggle.setAttribute('aria-expanded', 'true');
-		} else {
-			csToggle.setAttribute('aria-expanded', 'false');
-		}
-	}
-}
+      if (csExpanded === "false") {
+        csToggle.setAttribute("aria-expanded", "true");
+      } else {
+        csToggle.setAttribute("aria-expanded", "false");
+      }
+    }
+  }
 
-// mobile nav toggle code
-const dropDowns = Array.from(document.querySelectorAll('#cs-navigation .cs-dropdown'));
-for (const item of dropDowns) {
-	const onClick = () => {
-		item.classList.toggle('cs-active');
-	};
-	item.addEventListener('click', onClick);
-}
-                                
+  // mobile nav toggle code
+  const dropDowns = Array.from(
+    document.querySelectorAll("#cs-navigation .cs-dropdown"),
+  );
+  for (const item of dropDowns) {
+    const onClick = () => {
+      item.classList.toggle("cs-active");
+    };
+    item.addEventListener("click", onClick);
+  }
 </script>
 
 <script>
-// Dark Mode Toggle Logic
-document.addEventListener('DOMContentLoaded', () => {
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
+  // Dark Mode Toggle Logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const darkModeToggle = document.getElementById("dark-mode-toggle");
     const body = document.body;
 
     // Apply saved theme on initial load
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
+    if (localStorage.getItem("theme") === "dark") {
+      body.classList.add("dark-mode");
     }
 
     if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            // Save theme preference to localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
+      darkModeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        // Save theme preference to localStorage
+        if (body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
     }
-});
+  });
 </script>

@@ -1,0 +1,320 @@
+---
+// SplashScreen.astro - Retro loading bar splash screen
+---
+
+<div id="splash-screen" class="splash-screen" aria-hidden="true">
+    <div class="splash-content">
+        <!-- Logo -->
+        <div class="splash-logo-container">
+            <img
+                src="/photos/hplogo.svg"
+                alt="Road Runner Repairs"
+                class="splash-logo"
+            />
+        </div>
+
+        <!-- Loading Bar Section -->
+        <div class="loading-section">
+            <div class="loading-bar-container">
+                <div class="loading-bar-track">
+                    <div class="loading-bar-fill">
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                        <span class="loading-block"></span>
+                    </div>
+                </div>
+            </div>
+            <span class="loading-text">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Splash Screen Container - Always white background for branding */
+    .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        opacity: 1;
+        animation: splashFadeOut 0.6s ease-out 3.4s forwards;
+    }
+
+    /* Splash Content Wrapper */
+    .splash-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    /* Logo Container - Clean, no borders */
+    .splash-logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Logo Image - Responsive sizing */
+    .splash-logo {
+        width: clamp(200px, 50vw, 450px);
+        height: auto;
+        display: block;
+    }
+
+    /* Loading Section */
+    .loading-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: clamp(200px, 40vw, 350px);
+    }
+
+    /* Loading Bar Container */
+    .loading-bar-container {
+        width: 100%;
+    }
+
+    /* Loading Bar Track - Retro bordered frame */
+    .loading-bar-track {
+        width: 100%;
+        height: clamp(20px, 4vw, 28px);
+        background-color: #ffffff;
+        border: 3px solid #000000;
+        box-sizing: border-box;
+        padding: 3px;
+        position: relative;
+    }
+
+    /* Loading Bar Fill - Contains the blocks */
+    .loading-bar-fill {
+        display: flex;
+        align-items: stretch;
+        height: 100%;
+        gap: 2px;
+        overflow: hidden;
+    }
+
+    /* Individual Loading Blocks */
+    .loading-block {
+        flex: 1;
+        background-color: #000000;
+        opacity: 0;
+        animation: blockAppear 0.15s ease-out forwards;
+    }
+
+    /* Staggered block appearance animation */
+    .loading-block:nth-child(1) {
+        animation-delay: 0.2s;
+    }
+    .loading-block:nth-child(2) {
+        animation-delay: 0.4s;
+    }
+    .loading-block:nth-child(3) {
+        animation-delay: 0.6s;
+    }
+    .loading-block:nth-child(4) {
+        animation-delay: 0.8s;
+    }
+    .loading-block:nth-child(5) {
+        animation-delay: 1s;
+    }
+    .loading-block:nth-child(6) {
+        animation-delay: 1.2s;
+    }
+    .loading-block:nth-child(7) {
+        animation-delay: 1.4s;
+    }
+    .loading-block:nth-child(8) {
+        animation-delay: 1.6s;
+    }
+    .loading-block:nth-child(9) {
+        animation-delay: 1.8s;
+    }
+    .loading-block:nth-child(10) {
+        animation-delay: 2s;
+    }
+    .loading-block:nth-child(11) {
+        animation-delay: 2.2s;
+    }
+    .loading-block:nth-child(12) {
+        animation-delay: 2.4s;
+    }
+    .loading-block:nth-child(13) {
+        animation-delay: 2.6s;
+    }
+    .loading-block:nth-child(14) {
+        animation-delay: 2.8s;
+    }
+    .loading-block:nth-child(15) {
+        animation-delay: 3s;
+    }
+
+    /* Block appear animation */
+    @keyframes blockAppear {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    /* Loading Text - Retro pixelated style */
+    .loading-text {
+        font-family: "Share Tech Mono", "Courier New", monospace;
+        font-size: clamp(0.875rem, 2vw, 1.125rem);
+        color: #000000;
+        letter-spacing: 0.1em;
+        text-transform: lowercase;
+        animation: textBlink 0.8s ease-in-out infinite;
+    }
+
+    /* Text blink animation for retro terminal effect */
+    @keyframes textBlink {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    /* Fade Out Animation for Entire Splash Screen */
+    @keyframes splashFadeOut {
+        0% {
+            opacity: 1;
+            visibility: visible;
+        }
+        100% {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+    }
+
+    /* Prevent scrolling class */
+    :global(body.no-scroll) {
+        overflow: hidden !important;
+    }
+
+    /* Hidden state after animation */
+    .splash-screen.hidden {
+        display: none !important;
+    }
+
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .splash-screen,
+        .loading-block,
+        .loading-text {
+            animation: none;
+        }
+
+        .loading-block {
+            opacity: 1;
+        }
+
+        .loading-text {
+            opacity: 1;
+        }
+
+        .splash-screen {
+            animation: splashFadeOut 0.3s ease-out 1s forwards;
+        }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+        .splash-content {
+            gap: 1.5rem;
+        }
+
+        .loading-section {
+            max-width: 80vw;
+        }
+
+        .loading-bar-track {
+            height: 22px;
+            border-width: 2px;
+            padding: 2px;
+        }
+
+        .loading-bar-fill {
+            gap: 1px;
+        }
+    }
+</style>
+
+<script>
+    // Splash Screen Management
+    (function () {
+        const SPLASH_DURATION = 4000; // Total duration including fade out (ms)
+        const SESSION_KEY = "splashScreenShown";
+
+        function initSplashScreen() {
+            const splashScreen = document.getElementById("splash-screen");
+
+            if (!splashScreen) return;
+
+            // Check if splash was already shown in this session
+            if (sessionStorage.getItem(SESSION_KEY) === "true") {
+                // Skip splash screen - remove immediately
+                splashScreen.classList.add("hidden");
+                splashScreen.remove();
+                return;
+            }
+
+            // Add no-scroll class to body
+            document.body.classList.add("no-scroll");
+
+            // Mark splash as shown for this session
+            sessionStorage.setItem(SESSION_KEY, "true");
+
+            // Set timeout to remove splash screen after animation completes
+            setTimeout(function () {
+                // Remove no-scroll class
+                document.body.classList.remove("no-scroll");
+
+                // Hide and remove splashscreen from DOM
+                splashScreen.classList.add("hidden");
+
+                // Small delay before removing from DOM entirely
+                setTimeout(function () {
+                    if (splashScreen.parentNode) {
+                        splashScreen.remove();
+                    }
+                }, 100);
+            }, SPLASH_DURATION);
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initSplashScreen);
+        } else {
+            initSplashScreen();
+        }
+    })();
+</script>

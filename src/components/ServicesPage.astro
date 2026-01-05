@@ -1,329 +1,358 @@
-
 ---
-import repairsData from '../../data/repairs.json';
+import repairsData from "../../data/repairs.json";
 
-const repairsJson = JSON.stringify(repairsData).replace(/</g, '\\u003C');
+const repairsJson = JSON.stringify(repairsData).replace(/</g, "\\u003C");
 ---
 
 <section id="pricing-wizard-001" data-aos="fade-in">
-    <div class="pw-step" id="pw-step-1">
-      <h2 class="pw-title">1. Choose your product</h2>
-      <div class="pw-controls">
-        <div class="pw-field">
-          <label for="category">Category</label>
-          <select id="category">
-            <option value="">Select</option>
-            <option value="phone">Phone</option>
-            <option value="laptop">Laptop</option>
-            <option value="tablet">Tablet</option>
-          </select>
-        </div>
-  
-        <div class="pw-field">
-          <label for="brand">Brand</label>
-          <select id="brand" disabled>
-            <option value="">Select category first</option>
-          </select>
-        </div>
-  
-        <div class="pw-field">
-          <label for="model">Model</label>
-          <select id="model" disabled>
-            <option value="">Select brand first</option>
-          </select>
-        </div>
-  
-        <div class="pw-field">
-          <label for="variant">Variant</label>
-          <select id="variant" disabled>
-            <option value="">Select model first</option>
-          </select>
-        </div>
-  
-        <button id="to-phase-2" disabled>Continue</button>
+  <div class="pw-step" id="pw-step-1">
+    <h2 class="pw-title">1. Choose your product</h2>
+    <div class="pw-controls">
+      <div class="pw-field">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="">Select</option>
+          <option value="phone">Phone</option>
+          <option value="laptop">Laptop</option>
+          <option value="tablet">Tablet</option>
+        </select>
       </div>
+
+      <div class="pw-field">
+        <label for="brand">Brand</label>
+        <select id="brand" disabled>
+          <option value="">Select category first</option>
+        </select>
+      </div>
+
+      <div class="pw-field">
+        <label for="model">Model</label>
+        <select id="model" disabled>
+          <option value="">Select brand first</option>
+        </select>
+      </div>
+
+      <button id="to-phase-2" disabled>Continue</button>
     </div>
-  
-    <div class="pw-step" id="pw-step-2" style="display:none;">
-      <h2 class="pw-title">2. Pick a repair & parts</h2>
-      <div id="repairs-list" class="pw-repairs"></div>
+  </div>
+
+  <div class="pw-step" id="pw-step-2" style="display:none;">
+    <h2 class="pw-title">2. Pick a repair & parts</h2>
+    <div id="repairs-list" class="pw-repairs"></div>
+    <div class="pw-actions">
+      <button id="back-to-1">Back</button>
+      <button id="to-phase-3" disabled>Next: Booking</button>
+    </div>
+  </div>
+
+  <div class="pw-step" id="pw-step-3" style="display:none;">
+    <h2 class="pw-title">3. Booking details</h2>
+    <form id="booking-form">
+      <div class="pw-field">
+        <label>Name<input name="name" required /></label>
+      </div>
+      <div class="pw-field">
+        <label>Email<input name="email" type="email" required /></label>
+      </div>
+      <div class="pw-field">
+        <label>Phone<input name="phone" required /></label>
+      </div>
+      <div class="pw-field">
+        <label>Issue description<textarea name="desc"></textarea></label>
+      </div>
+      <div class="pw-field">
+        <label
+          >Photos<input
+            type="file"
+            id="photos"
+            name="photos"
+            accept="image/*"
+            multiple
+          /></label
+        >
+      </div>
+
       <div class="pw-actions">
-        <button id="back-to-1">Back</button>
-        <button id="to-phase-3" disabled>Next: Booking</button>
+        <button type="button" id="back-to-2">Back</button>
+        <button type="submit" id="submit-booking">Submit Booking</button>
       </div>
-    </div>
-  
-    <div class="pw-step" id="pw-step-3" style="display:none;">
-      <h2 class="pw-title">3. Booking details</h2>
-      <form id="booking-form">
-        <div class="pw-field"><label>Name<input name="name" required></label></div>
-        <div class="pw-field"><label>Email<input name="email" type="email" required></label></div>
-        <div class="pw-field"><label>Phone<input name="phone" required></label></div>
-        <div class="pw-field"><label>Issue description<textarea name="desc"></textarea></label></div>
-        <div class="pw-field"><label>Photos<input type="file" id="photos" name="photos" accept="image/*" multiple></label></div>
-  
-        <div class="pw-actions">
-          <button type="button" id="back-to-2">Back</button>
-          <button type="submit" id="submit-booking">Submit Booking</button>
-        </div>
-      </form>
-      <div id="submission-status" aria-live="polite"></div>
-    </div>
-  </section>
-  
+    </form>
+    <div id="submission-status" aria-live="polite"></div>
+  </div>
+</section>
+
 <style is:global>
-    #pricing-wizard-001 { font-family: 'IBM Plex Mono', monospace; padding: 14px; max-width:720px; margin:0 auto; }
-    .pw-title { font-size:1.125rem; margin-bottom:1rem; color: var(--headerColor); }
-    .pw-field { 
-        margin-bottom:1rem; 
-        display:flex; 
-        flex-direction:column; 
-        gap:0.5rem; 
+  #pricing-wizard-001 {
+    font-family: "IBM Plex Mono", monospace;
+    padding: 14px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .pw-title {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: var(--headerColor);
+  }
+  .pw-field {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .pw-field label {
+    font-size: 0.875rem;
+    color: var(--bodyTextColor);
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  /* Ensure label text appears above inputs */
+  .pw-field label > input,
+  .pw-field label > textarea,
+  .pw-field label > select {
+    margin-top: 0;
+  }
+  .pw-field input,
+  .pw-field select,
+  .pw-field textarea {
+    padding: 10px;
+    border: 2px solid var(--headerColor);
+    border-radius: 0; /* Ensure no radius */
+    font-size: 1rem;
+    font-family: "IBM Plex Mono", monospace;
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pw-field textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .pw-field input[type="file"] {
+    padding: 8px;
+    cursor: pointer;
+  }
+  .pw-repairs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .repair-card {
+    border: 4px solid var(--headerColor); /* Thicker border for neobrutalist */
+    box-shadow: 6px 6px 0 0 var(--headerColor); /* Larger, more prominent shadow */
+    padding: 1.5rem;
+    border-radius: 0; /* Ensure no radius */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--backgroundColor);
+    color: var(--bodyTextColor);
+    position: relative;
+    transition:
+      transform 0.1s,
+      box-shadow 0.1s;
+  }
+  .repair-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 0 var(--headerColor);
+  }
+  .repair-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: var(--bodyTextColor);
+    gap: 1rem;
+  }
+  .repair-header > div:first-child {
+    flex: 1;
+  }
+  .repair-header strong {
+    color: var(--headerColor);
+    font-size: 1.125rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .repair-desc {
+    color: var(--bodyTextColor);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+  }
+  .repair-prices {
+    color: var(--bodyTextColor);
+    padding: 1rem;
+    border: 2px solid var(--headerColor);
+    background-color: var(--backgroundColor);
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .part-quality-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 1rem;
+    border: 3px solid var(--headerColor);
+    background-color: var(--backgroundColor);
+    transition:
+      transform 0.1s,
+      box-shadow 0.1s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .part-quality-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--headerColor);
+  }
+  .part-quality-card.selected {
+    border-color: var(--primary);
+    box-shadow: 8px 8px 0 0 var(--primary);
+  }
+  .part-quality-card strong {
+    color: var(--headerColor);
+    font-size: 1.125rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .part-quality-card p {
+    color: var(--bodyTextColor);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .part-quality-card button {
+    margin-top: auto;
+    padding: 0.625rem 1rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border: 3px solid var(--headerColor);
+    box-shadow: 3px 3px 0 0 var(--headerColor);
+    background-color: var(--primary);
+    color: var(--headerColor);
+    transition:
+      transform 0.1s,
+      box-shadow 0.1s;
+    cursor: pointer;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .part-quality-card button:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--headerColor);
+    background-color: var(--primary);
+    color: var(--headerColor);
+  }
+  .part-quality-card button:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 0 var(--headerColor);
+  }
+  .repair-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .repair-card button {
+    padding: 0.625rem 1rem !important;
+    font-weight: 700 !important;
+    font-size: 0.875rem !important;
+    border: 3px solid var(--headerColor) !important;
+    box-shadow: 3px 3px 0 0 var(--headerColor) !important;
+    background-color: var(--primary) !important;
+    color: var(--headerColor) !important;
+    transition:
+      transform 0.1s,
+      box-shadow 0.1s !important;
+  }
+  .repair-card button:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 4px 4px 0 0 var(--headerColor) !important;
+    background-color: var(--primary) !important;
+    color: var(--headerColor) !important;
+  }
+  .repair-card button:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 2px 2px 0 0 var(--headerColor) !important;
+  }
+  .pw-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+  #submission-status {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    color: var(--bodyTextColor);
+    font-size: 0.875rem;
+    min-height: 1.5rem;
+  }
+  button {
+    padding: 8px 12px;
+    border-radius: 0; /* Ensure no radius */
+    border: 2px solid var(--headerColor);
+    background: var(--backgroundColor);
+    color: var(--bodyTextColor);
+    cursor: pointer;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    transition: none;
+  }
+  button:hover {
+    background: var(--headerColor);
+    color: var(--backgroundColor);
+  }
+  button:disabled {
+    background-color: var(--backgroundColor);
+    opacity: 0.5;
+    color: var(--bodyTextColor);
+    border-color: var(--headerColor);
+    cursor: not-allowed;
+  }
+  @media (min-width: 760px) {
+    .pw-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
-    .pw-field label { 
-        font-size:.875rem; 
-        color: var(--bodyTextColor);
-        font-weight: 500;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    /* Ensure label text appears above inputs */
-    .pw-field label > input,
-    .pw-field label > textarea,
-    .pw-field label > select {
-        margin-top: 0;
-    }
-    .pw-field input, .pw-field select, .pw-field textarea {
-        padding: 10px;
-        border: 2px solid var(--headerColor);
-        border-radius: 0; /* Ensure no radius */
-        font-size: 1rem;
-        font-family: 'IBM Plex Mono', monospace;
-        background-color: var(--backgroundColor);
-        color: var(--bodyTextColor);
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .pw-field textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    .pw-field input[type="file"] {
-        padding: 8px;
-        cursor: pointer;
-    }
-    .pw-repairs { 
-        display:flex; 
-        flex-direction:column; 
-        gap:1.25rem; 
-        margin-bottom:1.5rem; 
-    }
-    .repair-card {
-        border: 4px solid var(--headerColor); /* Thicker border for neobrutalist */
-        box-shadow: 6px 6px 0 0 var(--headerColor); /* Larger, more prominent shadow */
-        padding: 1.5rem;
-        border-radius: 0; /* Ensure no radius */
-        display:flex;
-        flex-direction:column;
-        gap:1rem;
-        background-color: var(--backgroundColor);
-        color: var(--bodyTextColor);
-        position: relative;
-        transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .repair-card:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 8px 8px 0 0 var(--headerColor);
-    }
-    .repair-header { 
-        display:flex; 
-        justify-content:space-between; 
-        align-items:flex-start; 
-        color: var(--bodyTextColor);
-        gap: 1rem;
-    }
-    .repair-header > div:first-child {
-        flex: 1;
-    }
-    .repair-header strong { 
-        color: var(--headerColor);
-        font-size: 1.125rem;
-        font-weight: 700;
-        display: block;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .repair-desc { 
-        color: var(--bodyTextColor);
-        font-size: 0.9375rem;
-        line-height: 1.5;
-        margin-top: 0.5rem;
-    }
-    .repair-prices { 
-        color: var(--bodyTextColor);
-        padding: 1rem;
-        border: 2px solid var(--headerColor);
-        background-color: var(--backgroundColor);
-        margin-top: 0.5rem;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .part-quality-card {
-        flex: 1;
-        min-width: 200px;
-        padding: 1rem;
-        border: 3px solid var(--headerColor);
-        background-color: var(--backgroundColor);
-        transition: transform 0.1s, box-shadow 0.1s;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .part-quality-card:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 var(--headerColor);
-    }
-    .part-quality-card.selected {
-        border-color: var(--primary);
-        box-shadow: 8px 8px 0 0 var(--primary);
-    }
-    .part-quality-card strong {
-        color: var(--headerColor);
-        font-size: 1.125rem;
-        font-weight: 700;
-        display: block;
-        margin-bottom: 0.25rem;
-    }
-    .part-quality-card p {
-        color: var(--bodyTextColor);
-        font-size: 0.9375rem;
-        line-height: 1.5;
-        margin: 0;
-    }
-    .part-quality-card button {
-        margin-top: auto;
-        padding: 0.625rem 1rem;
-        font-weight: 700;
-        font-size: 0.875rem;
-        border: 3px solid var(--headerColor);
-        box-shadow: 3px 3px 0 0 var(--headerColor);
-        background-color: var(--primary);
-        color: var(--headerColor);
-        transition: transform 0.1s, box-shadow 0.1s;
-        cursor: pointer;
-        font-family: 'IBM Plex Mono', monospace;
-    }
-    .part-quality-card button:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 0 var(--headerColor);
-        background-color: var(--primary);
-        color: var(--headerColor);
-    }
-    .part-quality-card button:active {
-        transform: translate(1px, 1px);
-        box-shadow: 2px 2px 0 0 var(--headerColor);
-    }
-    .repair-actions { 
-        display:flex; 
-        gap:0.75rem; 
-        align-items:center;
-        flex-shrink: 0;
-    }
-    .repair-card button {
-        padding: 0.625rem 1rem !important;
-        font-weight: 700 !important;
-        font-size: 0.875rem !important;
-        border: 3px solid var(--headerColor) !important;
-        box-shadow: 3px 3px 0 0 var(--headerColor) !important;
-        background-color: var(--primary) !important;
-        color: var(--headerColor) !important;
-        transition: transform 0.1s, box-shadow 0.1s !important;
-    }
-    .repair-card button:hover {
-        transform: translate(-1px, -1px) !important;
-        box-shadow: 4px 4px 0 0 var(--headerColor) !important;
-        background-color: var(--primary) !important;
-        color: var(--headerColor) !important;
-    }
-    .repair-card button:active {
-        transform: translate(1px, 1px) !important;
-        box-shadow: 2px 2px 0 0 var(--headerColor) !important;
-    }
-    .pw-actions { 
-        display:flex; 
-        gap:0.75rem; 
-        justify-content:flex-end; 
-        margin-top:1.5rem; 
-    }
-    #submission-status {
-        margin-top: 1rem;
-        padding: 0.75rem;
-        color: var(--bodyTextColor);
-        font-size: 0.875rem;
-        min-height: 1.5rem;
-    }
-    button {
-        padding: 8px 12px;
-        border-radius: 0; /* Ensure no radius */
-        border: 2px solid var(--headerColor);
-        background: var(--backgroundColor);
-        color: var(--bodyTextColor);
-        cursor: pointer;
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 700;
-        transition: none;
-    }
-    button:hover {
-        background: var(--headerColor);
-        color: var(--backgroundColor);
-    }
-    button:disabled {
-        background-color: var(--backgroundColor);
-        opacity: 0.5;
-        color: var(--bodyTextColor);
-        border-color: var(--headerColor);
-        cursor: not-allowed;
-    }
-    @media(min-width:760px){ 
-      .pw-controls { 
-        display:grid; 
-        grid-template-columns:repeat(2,1fr); 
-        gap:1rem; 
-      } 
-      .pw-repairs { 
-        gap:1.25rem; 
-      } 
-      
-      /* New layout for booking form */
-      #booking-form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-        align-items: start;
-      }
-      #booking-form .pw-field {
-        margin-bottom: 0;
-      }
-      #booking-form .pw-field:has(textarea),
-      #booking-form .pw-field:has(input[type="file"]),
-      #booking-form .pw-actions {
-        grid-column: 1 / -1; /* Span both columns */
-      }
-      #booking-form .pw-field:has(textarea) {
-        margin-top: 0.25rem;
-      }
-      #booking-form .pw-field:has(input[type="file"]) {
-        margin-top: 0.25rem;
-      }
+    .pw-repairs {
+      gap: 1.25rem;
     }
 
-    /* Dark mode overrides for wizard - now handled by CSS variables */
+    /* New layout for booking form */
+    #booking-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    #booking-form .pw-field {
+      margin-bottom: 0;
+    }
+    #booking-form .pw-field:has(textarea),
+    #booking-form .pw-field:has(input[type="file"]),
+    #booking-form .pw-actions {
+      grid-column: 1 / -1; /* Span both columns */
+    }
+    #booking-form .pw-field:has(textarea) {
+      margin-top: 0.25rem;
+    }
+    #booking-form .pw-field:has(input[type="file"]) {
+      margin-top: 0.25rem;
+    }
+  }
+
+  /* Dark mode overrides for wizard - now handled by CSS variables */
 </style>
-  <script id="repairs-data" type="application/json" set:html={repairsJson}></script>
-  <script>
+<script id="repairs-data" type="application/json" set:html={repairsJson} />
+<script>
   // @ts-nocheck
   /**
    * Client-side logic for PricingWizard
@@ -332,234 +361,281 @@ const repairsJson = JSON.stringify(repairsData).replace(/</g, '\\u003C');
    * - Loads local /data/repairs.json for repair options
    * - No third-party browser calls to MobileAPI.dev or Icecat
    */
-  (async function(){
-    const categoryEl = document.getElementById('category');
-    const brandEl = document.getElementById('brand');
-    const modelEl = document.getElementById('model');
-    const variantEl = document.getElementById('variant');
-    const toPhase2Btn = document.getElementById('to-phase-2');
-  
-    const pwStep1 = document.getElementById('pw-step-1');
-    const pwStep2 = document.getElementById('pw-step-2');
-    const pwStep3 = document.getElementById('pw-step-3');
-  
-    const repairsContainer = document.getElementById('repairs-list');
-    const toPhase3Btn = document.getElementById('to-phase-3');
-  
-    const state = { category:null, brand:null, model:null, variant:null, repairSelection:null };
+  (async function () {
+    const categoryEl = document.getElementById("category");
+    const brandEl = document.getElementById("brand");
+    const modelEl = document.getElementById("model");
+    const toPhase2Btn = document.getElementById("to-phase-2");
+
+    const pwStep1 = document.getElementById("pw-step-1");
+    const pwStep2 = document.getElementById("pw-step-2");
+    const pwStep3 = document.getElementById("pw-step-3");
+
+    const repairsContainer = document.getElementById("repairs-list");
+    const toPhase3Btn = document.getElementById("to-phase-3");
+
+    const state = {
+      category: null,
+      brand: null,
+      model: null,
+      repairSelection: null,
+    };
 
     const repairsData = (() => {
       try {
-        const el = document.getElementById('repairs-data');
+        const el = document.getElementById("repairs-data");
         if (!el) {
-          console.warn('Embedded repairs data not found.');
+          console.warn("Embedded repairs data not found.");
           return null;
         }
-        return JSON.parse(el.textContent || '{}');
+        return JSON.parse(el.textContent || "{}");
       } catch (error) {
-        console.error('Failed to parse embedded repairs data', error);
+        console.error("Failed to parse embedded repairs data", error);
         return null;
       }
     })();
-  
+
     // Local brand fallback (used if deviceCatalog.json fails to load)
     // Note: MobileAPI.dev provides phone/tablet/smartwatch data, but not laptops
     // Laptop category will use this fallback even when catalog loads successfully
     const localBrands = {
-      phone: ["Apple","Samsung","Google","OnePlus","Sony","LG"],
-      laptop: ["Apple","Dell","HP","Lenovo","Asus","Acer"], // Not available from MobileAPI.dev
-      tablet: ["Apple","Samsung","Amazon","Lenovo"],
-      smartwatch: ["Apple","Samsung","Google","Fitbit"] // Added to match new catalog structure
+      phone: ["Apple", "Samsung", "Google", "OnePlus", "Sony", "LG"],
+      laptop: ["Apple", "Dell", "HP", "Lenovo", "Asus", "Acer"], // Not available from MobileAPI.dev
+      tablet: ["Apple", "Samsung", "Amazon", "Lenovo"],
+      smartwatch: ["Apple", "Samsung", "Google", "Fitbit"], // Added to match new catalog structure
     };
-  
-    // Device catalog data (loaded from Supabase)
+
+    // Device catalog data (loaded from local file)
     let deviceCatalog = null;
     let usingFallback = false;
-  
+
     // Warning element for fallback mode
     let fallbackWarning = null;
-  
-    // --- Load device catalog from Supabase ---
-    async function loadDeviceCatalog(){
-      if(deviceCatalog) return deviceCatalog;
-  
+
+    // --- Load device catalog from local file ---
+    async function loadDeviceCatalog() {
+      if (deviceCatalog) return deviceCatalog;
+
       try {
-        // Try to load from API endpoint first (works for private buckets)
-        // If your bucket is public, you can use the direct Storage URL instead
-        const catalogUrl = '/api/device-catalog.json';
+        // Load from local data file
+        const catalogUrl = "/data/deviceCatalog.json";
         const res = await fetch(catalogUrl);
-        
-        if(!res.ok) throw new Error(`Failed to fetch catalog: ${res.statusText}`);
-        
+
+        if (!res.ok)
+          throw new Error(`Failed to fetch catalog: ${res.statusText}`);
+
         deviceCatalog = await res.json();
         usingFallback = false;
         hideFallbackWarning();
         return deviceCatalog;
-      } catch(err) {
-        console.warn('Failed to load device catalog, using fallback:', err);
+      } catch (err) {
+        console.warn("Failed to load device catalog, using fallback:", err);
         usingFallback = true;
         showFallbackWarning();
         return null;
       }
     }
-  
+
     // --- Show/hide fallback warning ---
-    function showFallbackWarning(){
-      if(fallbackWarning) return;
-      const categoryField = categoryEl.closest('.pw-field');
-      fallbackWarning = document.createElement('div');
-      fallbackWarning.className = 'fallback-warning';
-      fallbackWarning.style.cssText = 'padding: 0.5rem; margin-bottom: 1rem; border: 2px solid var(--headerColor); background-color: var(--backgroundColor); color: var(--bodyTextColor); font-size: 0.875rem;';
-      fallbackWarning.textContent = '⚠️ Using limited device catalog. Some devices may not be available.';
-      categoryField.parentNode.insertBefore(fallbackWarning, categoryField.nextSibling);
+    function showFallbackWarning() {
+      if (fallbackWarning) return;
+      const categoryField = categoryEl.closest(".pw-field");
+      fallbackWarning = document.createElement("div");
+      fallbackWarning.className = "fallback-warning";
+      fallbackWarning.style.cssText =
+        "padding: 0.5rem; margin-bottom: 1rem; border: 2px solid var(--headerColor); background-color: var(--backgroundColor); color: var(--bodyTextColor); font-size: 0.875rem;";
+      fallbackWarning.textContent =
+        "⚠️ Using limited device catalog. Some devices may not be available.";
+      categoryField.parentNode.insertBefore(
+        fallbackWarning,
+        categoryField.nextSibling,
+      );
     }
-  
-    function hideFallbackWarning(){
-      if(fallbackWarning) {
+
+    function hideFallbackWarning() {
+      if (fallbackWarning) {
         fallbackWarning.remove();
         fallbackWarning = null;
       }
     }
-  
+
     // --- Get brands from catalog ---
-    function getBrandsFromCatalog(category){
-      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+    function getBrandsFromCatalog(category) {
+      if (
+        !deviceCatalog ||
+        !deviceCatalog.categories ||
+        !deviceCatalog.categories[category]
+      ) {
         return null;
       }
       const categoryData = deviceCatalog.categories[category];
       return Object.keys(categoryData.brands || {});
     }
-  
+
     // --- Get models from catalog ---
-    function getModelsFromCatalog(category, brand){
-      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+    function getModelsFromCatalog(category, brand) {
+      if (
+        !deviceCatalog ||
+        !deviceCatalog.categories ||
+        !deviceCatalog.categories[category]
+      ) {
         return null;
       }
       const categoryData = deviceCatalog.categories[category];
       const brandData = categoryData.brands[brand];
-      if(!brandData) return null;
+      if (!brandData) return null;
       return Object.keys(brandData.models || {});
     }
-  
+
     // --- Get variants from catalog ---
-    function getVariantsFromCatalog(category, brand, model){
-      if(!deviceCatalog || !deviceCatalog.categories || !deviceCatalog.categories[category]) {
+    function getVariantsFromCatalog(category, brand, model) {
+      if (
+        !deviceCatalog ||
+        !deviceCatalog.categories ||
+        !deviceCatalog.categories[category]
+      ) {
         return null;
       }
       const categoryData = deviceCatalog.categories[category];
       const brandData = categoryData.brands[brand];
-      if(!brandData) return null;
+      if (!brandData) return null;
       const modelData = brandData.models[model];
-      if(!modelData) return null;
+      if (!modelData) return null;
       return modelData.variants || [];
     }
-  
+
     // --- Phase1 handlers ---
-    categoryEl.addEventListener('change', async e=>{
+    categoryEl.addEventListener("change", async (e) => {
       const cat = e.target.value;
       state.category = cat;
-      resetSelect(brandEl, 'Loading brands...');
-      resetSelect(modelEl, 'Select brand first', true);
-      resetSelect(variantEl, 'Select model first', true);
-  
-      if(!cat){ disableBtn(toPhase2Btn); brandEl.disabled=true; return; }
-      brandEl.disabled=false;
-  
+      resetSelect(brandEl, "Loading brands...");
+      resetSelect(modelEl, "Select brand first", true);
+
+      if (!cat) {
+        disableBtn(toPhase2Btn);
+        brandEl.disabled = true;
+        return;
+      }
+      brandEl.disabled = false;
+
       // Ensure catalog is loaded
       await loadDeviceCatalog();
-  
+
       // Get brands from catalog or fallback
       let brands = null;
-      if(!usingFallback && deviceCatalog) {
+      if (!usingFallback && deviceCatalog) {
         brands = getBrandsFromCatalog(cat);
       }
-      
+
       // If no brands from catalog (or catalog failed), use fallback
       // This also handles laptop category which isn't in MobileAPI.dev catalog
-      if(!brands || brands.length === 0) {
+      if (!brands || brands.length === 0) {
         brands = localBrands[cat] || [];
         // If using fallback for a category that should be in catalog, show warning
-        if(!usingFallback && deviceCatalog && (cat === 'phone' || cat === 'tablet' || cat === 'smartwatch')) {
-          console.warn(`No brands found in catalog for category: ${cat}, using fallback`);
+        if (
+          !usingFallback &&
+          deviceCatalog &&
+          (cat === "phone" || cat === "tablet" || cat === "smartwatch")
+        ) {
+          console.warn(
+            `No brands found in catalog for category: ${cat}, using fallback`,
+          );
         }
       }
-  
+
       populateSelect(brandEl, brands);
     });
-  
-    brandEl.addEventListener('change', async e=>{
+
+    brandEl.addEventListener("change", async (e) => {
       const brand = e.target.value;
       state.brand = brand;
-      resetSelect(modelEl, 'Loading models...');
-      resetSelect(variantEl, 'Select model first', true);
+      resetSelect(modelEl, "Loading models...");
       modelEl.disabled = false;
-  
+
       // Ensure catalog is loaded
       await loadDeviceCatalog();
-  
+
       // Get models from catalog or use empty array
       let models = null;
-      if(!usingFallback && deviceCatalog) {
+      if (!usingFallback && deviceCatalog) {
         models = getModelsFromCatalog(state.category, brand);
       }
-      
-      if(!models || models.length === 0) {
+
+      if (!models || models.length === 0) {
         models = [];
       }
-  
+
       populateSelect(modelEl, models);
     });
-  
-    modelEl.addEventListener('change', e=>{
+
+    modelEl.addEventListener("change", (e) => {
       const model = e.target.value;
       state.model = model;
-      resetSelect(variantEl, 'Loading variants...');
-      variantEl.disabled = false;
-  
-      // Get variants from catalog
-      let variants = null;
-      if(!usingFallback && deviceCatalog) {
-        variants = getVariantsFromCatalog(state.category, state.brand, model);
-      }
-      
-      if(!variants || variants.length === 0) {
-        variants = [];
-      }
-  
-      populateSelect(variantEl, variants);
+      toPhase2Btn.disabled = !model;
     });
-  
-    variantEl.addEventListener('change', e=>{
-      state.variant = e.target.value;
-      toPhase2Btn.disabled = !state.variant;
+
+    function resetSelect(select, placeholder, disabled = false) {
+      select.innerHTML = `<option value="">${placeholder}</option>`;
+      select.disabled = !!disabled;
+    }
+    function populateSelect(select, items) {
+      select.innerHTML =
+        `<option value="">Select</option>` +
+        (items || [])
+          .map(
+            (it) =>
+              `<option value="${escapeHtml(it)}">${escapeHtml(it)}</option>`,
+          )
+          .join("");
+    }
+    function disableBtn(btn) {
+      btn.disabled = true;
+    }
+    function enableBtn(btn) {
+      btn.disabled = false;
+    }
+
+    toPhase2Btn.addEventListener("click", () => {
+      pwStep1.style.display = "none";
+      pwStep2.style.display = "block";
+      loadRepairs();
     });
-  
-    function resetSelect(select, placeholder, disabled=false){ select.innerHTML = `<option value="">${placeholder}</option>`; select.disabled = !!disabled; }
-    function populateSelect(select, items){ select.innerHTML = `<option value="">Select</option>` + (items||[]).map(it=>`<option value="${escapeHtml(it)}">${escapeHtml(it)}</option>`).join(''); }
-    function disableBtn(btn){ btn.disabled = true; }
-    function enableBtn(btn){ btn.disabled = false; }
-  
-    toPhase2Btn.addEventListener('click', ()=>{
-      pwStep1.style.display='none'; pwStep2.style.display='block'; loadRepairs();
+
+    document.getElementById("back-to-1").addEventListener("click", () => {
+      pwStep2.style.display = "none";
+      pwStep1.style.display = "block";
     });
-  
-    document.getElementById('back-to-1').addEventListener('click', ()=>{ pwStep2.style.display='none'; pwStep1.style.display='block'; });
-    document.getElementById('back-to-2').addEventListener('click', ()=>{ pwStep3.style.display='none'; pwStep2.style.display='block'; });
-  
+    document.getElementById("back-to-2").addEventListener("click", () => {
+      pwStep3.style.display = "none";
+      pwStep2.style.display = "block";
+    });
+
     // --- Phase2: local repairs.json loader ---
-    async function loadRepairs(){
-      if(!repairsData || !Array.isArray(repairsData.repairs)){
-        repairsContainer.innerText = 'Failed to load repairs.';
+    async function loadRepairs() {
+      if (!repairsData || !repairsData.repairsByModel) {
+        repairsContainer.innerText = "Failed to load repairs.";
         return;
       }
       renderRepairs();
     }
-  
-    function renderRepairs(){
-      repairsContainer.innerHTML = '';
-      repairsData.repairs.forEach(r=>{
-        const card = document.createElement('div');
-        card.className = 'repair-card';
+
+    function renderRepairs() {
+      repairsContainer.innerHTML = "";
+
+      // Get repairs for the selected model
+      const modelRepairs = repairsData.repairsByModel[state.model];
+
+      if (!modelRepairs) {
+        repairsContainer.innerHTML = `<p style="color: var(--bodyTextColor);">No repairs available for ${escapeHtml(state.model)}. Please contact us for a custom quote.</p>`;
+        return;
+      }
+
+      // Convert the model repairs object to an array
+      const repairsArray = Object.values(modelRepairs);
+
+      repairsArray.forEach((r) => {
+        const card = document.createElement("div");
+        card.className = "repair-card";
         card.innerHTML = `
           <div class="repair-header">
             <div>
@@ -587,57 +663,87 @@ const repairsJson = JSON.stringify(repairsData).replace(/</g, '\\u003C');
         `;
         repairsContainer.appendChild(card);
       });
-  
-      repairsContainer.addEventListener('click', ev=>{
-        const btn = ev.target.closest('button'); if(!btn) return;
-        const action = btn.dataset.action; const id = btn.dataset.id;
-        if(action==='show-prices'){ const p = document.getElementById(`prices-${id}`); p.style.display = (p.style.display==='none')? 'block':'none'; }
-        else if(action==='select-repair'){
+
+      repairsContainer.addEventListener("click", (ev) => {
+        const btn = ev.target.closest("button");
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (action === "show-prices") {
+          const p = document.getElementById(`prices-${id}`);
+          p.style.display = p.style.display === "none" ? "block" : "none";
+        } else if (action === "select-repair") {
           const chosen = btn.dataset.quality;
-          if(!chosen){ alert('Choose OEM or Aftermarket first.'); return; }
-          const repairObj = repairsData.repairs.find(x=>x.id===id);
-          state.repairSelection = { id, label: repairObj.label, chosen, price: repairObj.prices[chosen] };
+          if (!chosen) {
+            alert("Choose OEM or Aftermarket first.");
+            return;
+          }
+          const modelRepairs = repairsData.repairsByModel[state.model];
+          const repairObj = modelRepairs[id];
+          state.repairSelection = {
+            id,
+            label: repairObj.label,
+            chosen,
+            price: repairObj.prices[chosen],
+          };
           toPhase3Btn.disabled = false;
-          document.querySelectorAll('.repair-card').forEach(c=> c.style.opacity=0.6);
-          btn.closest('.repair-card').style.opacity=1;
+          document
+            .querySelectorAll(".repair-card")
+            .forEach((c) => (c.style.opacity = 0.6));
+          btn.closest(".repair-card").style.opacity = 1;
           // Remove selected class from all part quality cards in this repair card
-          const repairCard = btn.closest('.repair-card');
-          repairCard.querySelectorAll('.part-quality-card').forEach(card=> card.classList.remove('selected'));
+          const repairCard = btn.closest(".repair-card");
+          repairCard
+            .querySelectorAll(".part-quality-card")
+            .forEach((card) => card.classList.remove("selected"));
           // Add selected class to the chosen part quality card
-          btn.closest('.part-quality-card').classList.add('selected');
+          btn.closest(".part-quality-card").classList.add("selected");
         }
       });
     }
-  
-    toPhase3Btn.addEventListener('click', ()=>{
-      if(!state.repairSelection){ alert('Select a repair first'); return; }
-      pwStep2.style.display='none'; pwStep3.style.display='block';
+
+    toPhase3Btn.addEventListener("click", () => {
+      if (!state.repairSelection) {
+        alert("Select a repair first");
+        return;
+      }
+      pwStep2.style.display = "none";
+      pwStep3.style.display = "block";
     });
-  
+
     // --- Phase3: submit to Supabase Function (example) ---
-    const bookingForm = document.getElementById('booking-form');
-    bookingForm.addEventListener('submit', async ev=>{
+    const bookingForm = document.getElementById("booking-form");
+    bookingForm.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(bookingForm);
-      fd.append('category', state.category);
-      fd.append('brand', state.brand);
-      fd.append('model', state.model);
-      fd.append('variant', state.variant);
-      fd.append('repairId', state.repairSelection.id);
-      fd.append('repairChoice', state.repairSelection.chosen);
-      fd.append('repairPrice', state.repairSelection.price);
-  
-      document.getElementById('submission-status').innerText = 'Submitting...';
-      try{
-        const SUPABASE_FN_URL = 'https://<project>.supabase.co/functions/v1/submit-repair-quote';
-        const res = await fetch(SUPABASE_FN_URL, { method:'POST', body: fd });
-        if(!res.ok) throw new Error('Submission failed');
-        document.getElementById('submission-status').innerText = 'Submitted! We\'ll be in touch shortly.';
+      fd.append("category", state.category);
+      fd.append("brand", state.brand);
+      fd.append("model", state.model);
+      fd.append("repairId", state.repairSelection.id);
+      fd.append("repairChoice", state.repairSelection.chosen);
+      fd.append("repairPrice", state.repairSelection.price);
+
+      document.getElementById("submission-status").innerText = "Submitting...";
+      try {
+        const SUPABASE_FN_URL =
+          "https://<project>.supabase.co/functions/v1/submit-repair-quote";
+        const res = await fetch(SUPABASE_FN_URL, { method: "POST", body: fd });
+        if (!res.ok) throw new Error("Submission failed");
+        document.getElementById("submission-status").innerText =
+          "Submitted! We'll be in touch shortly.";
         bookingForm.reset();
-      }catch(err){ console.error(err); document.getElementById('submission-status').innerText = 'Submission failed, try again later.'; }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("submission-status").innerText =
+          "Submission failed, try again later.";
+      }
     });
-  
-    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
   })();
-  </script>
-  
+</script>

@@ -24,3 +24,7 @@ pnpm-debug.log*
 .idea/
 .ps1
 .txt
+
+export-codebase/ps1
+
+data.md

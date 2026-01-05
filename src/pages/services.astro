@@ -2,130 +2,148 @@
 import Navbar from "../components/Navbar.astro";
 import ServicesPage from "../components/ServicesPage.astro";
 import Footer from "../components/Footer.astro";
+import SplashScreen from "../components/SplashScreen.astro";
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Services - Astro</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap" rel="stylesheet">
-		<link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+		<title>Services - Road Runner Repairs</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Francois+One&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&family=Sixtyfour&display=swap"
+			rel="stylesheet"
+		/>
+		<link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet" />
 	</head>
-	
+
 	<body>
-		<Navbar/>
+		<SplashScreen />
+		<Navbar />
 		<main>
 			<!-- About page content will go here -->
-            <ServicesPage/>
+			<ServicesPage />
 		</main>
 		<script is:inline src="https://unpkg.com/aos@next/dist/aos.js"></script>
 		<script is:inline>
 			function initAOS() {
-				if (typeof AOS !== 'undefined') {
+				if (typeof AOS !== "undefined") {
 					AOS.init({
 						duration: 800,
-						easing: 'ease-in-out',
+						easing: "ease-in-out",
 						once: true,
-						offset: 100
+						offset: 100,
 					});
 				} else {
 					// Fallback: if AOS doesn't load, ensure elements are visible
-					setTimeout(function() {
-						document.querySelectorAll('[data-aos]').forEach(function(el) {
-							el.style.opacity = '1';
-							el.style.visibility = 'visible';
-						});
+					setTimeout(function () {
+						document
+							.querySelectorAll("[data-aos]")
+							.forEach(function (el) {
+								el.style.opacity = "1";
+								el.style.visibility = "visible";
+							});
 					}, 100);
 				}
 			}
 			// Try multiple times to ensure AOS is loaded
 			function tryInitAOS() {
-				if (typeof AOS !== 'undefined') {
+				if (typeof AOS !== "undefined") {
 					initAOS();
 				} else {
 					setTimeout(tryInitAOS, 50);
 				}
 			}
 			// Start trying when DOM is ready
-			if (document.readyState === 'loading') {
-				document.addEventListener('DOMContentLoaded', tryInitAOS);
+			if (document.readyState === "loading") {
+				document.addEventListener("DOMContentLoaded", tryInitAOS);
 			} else {
 				tryInitAOS();
 			}
 			// Fallback timeout to show elements if AOS never loads
-			setTimeout(function() {
-				document.querySelectorAll('[data-aos]').forEach(function(el) {
-					if (el.style.opacity === '0' || window.getComputedStyle(el).opacity === '0') {
-						el.style.opacity = '1';
-						el.style.visibility = 'visible';
+			setTimeout(function () {
+				document.querySelectorAll("[data-aos]").forEach(function (el) {
+					if (
+						el.style.opacity === "0" ||
+						window.getComputedStyle(el).opacity === "0"
+					) {
+						el.style.opacity = "1";
+						el.style.visibility = "visible";
 					}
 				});
 			}, 1000);
 		</script>
 	</body>
-	<Footer/>
+	<Footer />
 </html>
 
 <style>
-:root {
-    /* Updated Neo-Brutalist Palette */
-    --primary: #ffa600; /* Vibrant Orange Accent */
-    --headerColor: #000000;
-    --bodyTextColor: #000000;
-    --bodyTextColorWhite: #000000; /* White is no longer a primary text color */
-    --backgroundColor: #FFFFFF;
+	:root {
+		/* Updated Neo-Brutalist Palette */
+		--primary: #ffa600; /* Vibrant Orange Accent */
+		--headerColor: #000000;
+		--bodyTextColor: #000000;
+		--bodyTextColorWhite: #000000; /* White is no longer a primary text color */
+		--backgroundColor: #ffffff;
 
-    --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
-    --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
-    --bodyFontSize: 1rem;
-    --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
-}
-
-body.dark-mode {
-    --headerColor: #FFFFFF;
-    --bodyTextColor: #FFFFFF;
-    --backgroundColor: #000000;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'IBM Plex Mono', monospace; /* New Global Font */
-    background-color: var(--backgroundColor);
-    color: var(--bodyTextColor);
-}
-
-*, *:before, *:after {
-    box-sizing: border-box;
-    border-radius: 0 !important; /* Force sharp corners everywhere */
-}
-
-h1, h2, h3, h4, h5, h6,
-.cs-title,
-.cs-h3,
-.cs-header {
-    font-family: 'IBM Plex Mono', monospace; /* New Global Font for Headings */
-    font-weight: 700;
-}
-
-/* Hard, offset shadow effect for brutalist style */
-.hard-shadow {
-    box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
-}
-/* Global spacing to offset fixed Navbar */
-@media only screen and (max-width: 63.9375rem) {
-	body {
-		padding-top: 5rem;
+		--topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+		--headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+		--bodyFontSize: 1rem;
+		--sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
 	}
-}
-@media only screen and (min-width: 64rem) {
-	body {
-		padding-top: 7rem;
+
+	body.dark-mode {
+		--headerColor: #ffffff;
+		--bodyTextColor: #ffffff;
+		--backgroundColor: #000000;
 	}
-}
+
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: "IBM Plex Mono", monospace; /* New Global Font */
+		background-color: var(--backgroundColor);
+		color: var(--bodyTextColor);
+	}
+
+	*,
+	*:before,
+	*:after {
+		box-sizing: border-box;
+		border-radius: 0 !important; /* Force sharp corners everywhere */
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	.cs-title,
+	.cs-h3,
+	.cs-header {
+		font-family:
+			"IBM Plex Mono", monospace; /* New Global Font for Headings */
+		font-weight: 700;
+	}
+
+	/* Hard, offset shadow effect for brutalist style */
+	.hard-shadow {
+		box-shadow: 4px 4px 0px 0px var(--headerColor) !important;
+	}
+	/* Global spacing to offset fixed Navbar */
+	@media only screen and (max-width: 63.9375rem) {
+		body {
+			padding-top: 5rem;
+		}
+	}
+	@media only screen and (min-width: 64rem) {
+		body {
+			padding-top: 7rem;
+		}
+	}
 </style>

@@ -1,32 +1,1145 @@
 {
-  "repairs": [
-    {
-      "id": "screen",
-      "label": "Screen Replacement",
-      "prices": {
-        "oem": 199,
-        "aftermarket": 119
+  "repairsByModel": {
+    "iPhone Air": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
       },
-      "description": "Replace cracked/damaged display."
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 165,
+          "aftermarket": 89
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
     },
-    {
-      "id": "battery",
-      "label": "Battery Replacement",
-      "prices": {
-        "oem": 89,
-        "aftermarket": 49
+    "iPhone 17 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 499,
+          "aftermarket": 280
+        }
       },
-      "description": "Replace battery, test cycles."
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 165,
+          "aftermarket": 89
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 339,
+          "aftermarket": 210
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
     },
-    {
-      "id": "charging",
-      "label": "Charging Port Repair",
-      "prices": {
-        "oem": 119,
-        "aftermarket": 79
+    "iPhone 17 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
       },
-      "description": "Fix/replace charging port."
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 165,
+          "aftermarket": 89
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 339,
+          "aftermarket": 210
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 17": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 16 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 499,
+          "aftermarket": 280
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 165,
+          "aftermarket": 89
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 339,
+          "aftermarket": 210
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 16 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 165,
+          "aftermarket": 89
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 339,
+          "aftermarket": 210
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 16 Plus": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 16": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 16e": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 329,
+          "aftermarket": 200
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 189,
+          "aftermarket": 125
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 15 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 499,
+          "aftermarket": 280
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 339,
+          "aftermarket": 210
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 15 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 289,
+          "aftermarket": 180
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 15 Plus": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 15": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 14 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 499,
+          "aftermarket": 280
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 289,
+          "aftermarket": 180
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 14 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 289,
+          "aftermarket": 180
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 14 Plus": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 14": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 135,
+          "aftermarket": 75
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 13 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 165
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 13 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 165
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 13": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 13 mini": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 309,
+          "aftermarket": 190
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 12 Pro Max": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 429,
+          "aftermarket": 250
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 165
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 12 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 165
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 12": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 12 mini": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 309,
+          "aftermarket": 190
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 11 Pro": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 365,
+          "aftermarket": 220
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 219,
+          "aftermarket": 140
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone 11": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 170
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 189,
+          "aftermarket": 125
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone XR": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 259,
+          "aftermarket": 170
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 65
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 189,
+          "aftermarket": 125
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone SE (3rd generation)": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 179,
+          "aftermarket": 120
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 95,
+          "aftermarket": 55
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 149,
+          "aftermarket": 99
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
+    },
+    "iPhone SE (2nd generation)": {
+      "screen": {
+        "id": "screen",
+        "label": "Screen Replacement",
+        "description": "Replace cracked/damaged display.",
+        "prices": {
+          "oem": 179,
+          "aftermarket": 120
+        }
+      },
+      "battery": {
+        "id": "battery",
+        "label": "Battery Replacement",
+        "description": "Replace battery, test cycles.",
+        "prices": {
+          "oem": 95,
+          "aftermarket": 55
+        }
+      },
+      "camera": {
+        "id": "camera",
+        "label": "Rear Camera Repair",
+        "description": "Replace or repair rear camera module.",
+        "prices": {
+          "oem": 149,
+          "aftermarket": 99
+        }
+      },
+      "charging": {
+        "id": "charging",
+        "label": "Charging Port Repair",
+        "description": "Fix/replace charging port.",
+        "prices": {
+          "oem": 119,
+          "aftermarket": 79
+        }
+      }
     }
-  ],
-  "defaultPartQuality": "aftermarket" 
+  },
+  "defaultPartQuality": "aftermarket"
 }
